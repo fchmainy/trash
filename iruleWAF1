@@ -1,0 +1,3 @@
+when ASM_REQUEST_DONE {
+log local0. "___________I am in ASM______"
+}
