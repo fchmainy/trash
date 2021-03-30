@@ -1,0 +1,77 @@
+{
+        "ansible_host": "10.16.10.16",
+        "ansible_user": "admin"
+      },
+      "bigip11": {
+        "ansible_connection": "local",
+        "ansible_host": "10.16.10.11",
+        "ansible_user": "chmainy",
+        "hostname": "bigip1.f5demo.fch",
+        "mgmtIP": "9.8.7.6",
+        "primary": true,
+        "version": "15.1.2.1"
+      },
+      "bigip12": {
+        "ansible_connection": "local",
+        "ansible_host": "10.16.10.12",
+        "ansible_user": "chmainy",
+        "hostname": "bigip2.f5demo.fch",
+        "mgmtIP": "8.7.6.5",
+        "primary": false,
+        "version": "15.1.2.1"
+      },
+      "bigip21": {
+        "ansible_connection": "local",
+        "ansible_host": "10.16.10.13",
+        "ansible_user": "chmainy",
+        "hostname": "bigip21.f5demo.fch",
+        "mgmtIP": "9.8.7.5",
+        "primary": true,
+        "version": "15.1.2.1"
+      },
+      "bigip22": {
+        "ansible_connection": "local",
+        "ansible_host": "10.16.10.14",
+        "ansible_user": "chmainy",
+        "hostname": "bigip22.f5demo.fch",
+        "mgmtIP": "9.8.7.4",
+        "primary": true,
+        "version": "15.1.2.1"
+      },
+      "bigip23": {
+        "ansible_connection": "local",
+        "ansible_host": "10.16.10.15",
+        "ansible_user": "chmainy",
+        "hostname": "bigip23.f5demo.fch",
+        "mgmtIP": "9.8.7.3",
+        "primary": true,
+        "version": "15.1.2.1"
+      },
+      "gitlab": {
+        "ansible_host": "10.16.10.15",
+        "ansible_user": "admin"
+      }
+    }
+  },
+  "cluster1": {
+    "hosts": [
+      "bigip11",
+      "bigip12"
+    ],
+    "vars": {
+      "ansible_connection": "local",
+      "ansible_user": "chmainy"
+    }
+  },
+  "cluster2": {
+    "hosts": [
+      "bigip21",
+      "bigip22",
+      "bigip23"
+    ],
+    "vars": {
+      "ansible_connection": "local",
+      "ansible_user": "chmainy"
+    }
+  }
+}
