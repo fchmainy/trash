@@ -4,11 +4,11 @@
   <policy_version>
     <timestamp>2018-04-17T20:02:05Z</timestamp>
     <device_name>ASM1.demolab.local</device_name>
-    <policy_name>/Common/testPolicy</policy_name>
+    <policy_name>/Common/testPolicy_v1.0</policy_name>
     <last_change>URL * [update]: Perform Staging was set to disabled. { audit: policy = /Common/testPolicy, component = Policy Builder }</last_change>
   </policy_version>
   <encoding>utf-8</encoding>
-  <description>Comprehensive Policy</description>
+  <description>Comprehensive Policy version 1.0</description>
   <case_insensitive>false</case_insensitive>
   <owa>false</owa>
   <protocol_free>false</protocol_free>
