@@ -4,7 +4,7 @@
   <policy_version>
     <timestamp>2018-07-02T11:23:32Z</timestamp>
     <device_name>ASM2.demolab.local</device_name>
-    <policy_name>/Common/f5_demo_app_v1.1</policy_name>
+    <policy_name>/Common/f5_demo_app_v2</policy_name>
     <last_change>Policy Server Technology Node.js [add]: Server Technology was set to Node.js. { audit: policy = /Common/f5_demo_app, username = admin, client IP = 192.168.164.48 }</last_change>
   </policy_version>
   <encoding>utf-8</encoding>
