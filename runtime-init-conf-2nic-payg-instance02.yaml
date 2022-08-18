@@ -20,7 +20,7 @@ extension_services:
         schemaVersion: 1.0.0
         class: Device
         async: true
-        label: FAILOVER 3NIC BIG-IP declaration for Declarative Onboarding with PAYG
+        label: FAILOVER 2NIC BIG-IP declaration for Declarative Onboarding with PAYG
           license
         Common:
           class: Tenant
