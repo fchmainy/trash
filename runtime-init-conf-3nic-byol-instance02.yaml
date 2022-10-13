@@ -37,8 +37,8 @@ extension_services:
           My_Ntp:
             class: NTP
             servers:
-              - 0.fr.pool.ntp.org
-              - 1.fr.pool.ntp.org
+              - ntp1.intra-global.net
+              - ntp2.intra-global.net
             timezone: UTC
           My_Dns:
             class: DNS
@@ -149,8 +149,8 @@ extension_services:
           My_Ntp:
             class: NTP
             servers:
-              - 0.fr.pool.ntp.org
-              - 1.fr.pool.ntp.org
+              - ntp1.intra-global.net
+              - ntp2.intra-global.net
             timezone: UTC
           My_Dns:
             class: DNS
