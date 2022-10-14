@@ -43,7 +43,8 @@ extension_services:
           My_Dns:
             class: DNS
             nameServers:
-              - 10.248.54.20
+              - 10.197.0.116
+              - 10.195.0.116
           My_System:
             autoPhonehome: true
             class: System
@@ -155,7 +156,8 @@ extension_services:
           My_Dns:
             class: DNS
             nameServers:
-              - 10.248.54.20
+              - 10.197.0.116
+              - 10.195.0.116
           My_System:
             autoPhonehome: true
             class: System
