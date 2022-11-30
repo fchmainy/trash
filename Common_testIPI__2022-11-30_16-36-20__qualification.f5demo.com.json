@@ -10,13 +10,13 @@
          "enabled" : true,
          "ipIntelligenceCategories" : [
             {
-               "alarm" : true,
+               "alarm" : false,
                "block" : false,
                "category" : "Spam Sources",
                "description" : "The Spam Sources category includes Tunneling Spam messages through proxy, anomalous SMTP activities, and Forum Spam activities."
             },
             {
-               "alarm" : true,
+               "alarm" : false,
                "block" : true,
                "category" : "Cloud-based Services",
                "description" : "The Cloud-based Services category includes IP addresses and networks that are used by cloud providers."
