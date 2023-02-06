@@ -2250,7 +2250,7 @@
                     "name": "environmentID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/EnvironmentID"
+                        "$ref": "#/components/schemas/EnvironmentID"
                     }
                 }
             ],
@@ -2393,7 +2393,7 @@
                     "name": "environmentID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/EnvironmentID"
+                        "$ref": "#/components/schemas/EnvironmentID"
                     }
                 }
             ],
@@ -2569,7 +2569,7 @@
                     "name": "environmentID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/EnvironmentID"
+                        "$ref": "#/components/schemas/EnvironmentID"
                     }
                 },
                 {
@@ -2578,7 +2578,7 @@
                     "name": "appID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/AppID"
+                        "$ref": "#/components/schemas/AppID"
                     }
                 }
             ],
@@ -2721,7 +2721,7 @@
                     "name": "environmentID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/EnvironmentID"
+                        "$ref": "#/components/schemas/EnvironmentID"
                     }
                 }
             ],
@@ -2927,7 +2927,7 @@
                     "name": "environmentID",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/EnvironmentID"
+                        "$ref": "#/components/schemas/EnvironmentID"
                     }
                 },
                 {
@@ -4631,7 +4631,7 @@
                     "name": "policyName",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/ResourceName"
+                        "$ref": "#/components/schemas/ResourceName"
                     }
                 }
             ],
@@ -4877,7 +4877,7 @@
                     "name": "strategyName",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/ResourceName"
+                        "$ref": "#/components/schemas/ResourceName"
                     }
                 }
             ],
@@ -4951,7 +4951,7 @@
                             "application/json": {
                                 "schema": {
                                     "items": {
-                                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/Metadata"
+                                        "$ref": "#/components/schemas/Metadata"
                                     },
                                     "type": "array"
                                 }
@@ -5074,7 +5074,7 @@
                     "name": "errorSetName",
                     "required": true,
                     "schema": {
-                        "$ref": "../../../../apis/ext/v1/schemas/resource-common.yaml#/components/schemas/ResourceName"
+                        "$ref": "#/components/schemas/ResourceName"
                     }
                 }
             ]
