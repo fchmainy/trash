@@ -1,0 +1,5015 @@
+swagger: '2.0'
+info:
+  version: 'v1'
+  title: Application Delivery Manager REST API Spec
+  description: >
+    Connect, secure, and govern APIs with NGINX Application Delivery Manager, which comes with RESTful APIs to manage the API infrastructure lifecycle for API Ops and API lifecycle for API teams.
+
+
+    Note: When you try out a request, the curl example does not include authentication because after logging into the Application Delivery Manager, you are already authenticated. If you want to run this on your own device, you will need to update authentication for your curl command.
+  contact: {}
+host: raw.githubusercontent.com
+basePath: /api/adc/v1
+securityDefinitions: {}
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /apps:
+    get:
+      description: >
+        Returns a list of all App resources regardless of environments
+      summary: listAllApps
+      tags:
+      - Apps
+      operationId: listAllApps
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all Apps regardless of environments.
+          schema:
+            $ref: '#/definitions/AppListAll'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the App resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentID}/apps:
+    get:
+      description: >
+        Returns a list of all App resources.
+      summary: listApps
+      tags:
+      - Apps
+      operationId: listApps
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Environment that contains the App.
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all App resources.
+          schema:
+            $ref: '#/definitions/AppList'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the App resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: Creates a new App resource.
+      summary: createApp
+      tags:
+      - Apps
+      operationId: createApp
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Environment that contains the App.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: An App.
+        schema:
+          $ref: '#/definitions/App'
+      responses:
+        '201':
+          description: Successfully created the specified App resource.
+          schema:
+            $ref: '#/definitions/App'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to create the App resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a naming conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentID}/apps/{appID}:
+    delete:
+      description: >
+        Deletes the specified App resource.
+
+
+        You must delete all of an App's child resources before you delete the App.
+      summary: deleteApp
+      tags:
+      - Apps
+      operationId: deleteApp
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the App.
+      - name: appID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the App.
+      responses:
+        '204':
+          description: Successfully deleted the specified App resource.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to delete the App resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: >-
+            The request to delete the specified App resource failed.
+
+            The App contains references to active objects and cannot be deleted. Delete the child objects or remove the references, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Gets the information for a specific App resource.
+      summary: getApp
+      tags:
+      - Apps
+      operationId: getApp
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the App.
+      - name: appID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the App.
+      responses:
+        '200':
+          description: Successfully retrieved information for the requested App resource.
+          schema:
+            $ref: '#/definitions/App'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to read the App resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: >
+        Creates a new App resource or updates an existing App resource.
+      summary: updateApp
+      tags:
+      - Apps
+      operationId: updateApp
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the App.
+      - name: appID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the App.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the App resource to create or update.
+        schema:
+          $ref: '#/definitions/App'
+      responses:
+        '200':
+          description: Successfully updated the specified App resource.
+          schema:
+            $ref: '#/definitions/App'
+          headers: {}
+        '201':
+          description: Successfully created the specified App resource.
+          schema:
+            $ref: '#/definitions/App'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the App resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments:
+    get:
+      description: >
+        Returns a list of all Environment resources.
+      summary: listEnvironments
+      tags:
+      - Environments
+      operationId: listEnvironments
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all Environment resources.
+          schema:
+            $ref: '#/definitions/EnvironmentList'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Environment resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: >
+        Creates a new Environment resource.
+      summary: createEnvironment
+      tags:
+      - Environments
+      operationId: createEnvironment
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Environment resource to create.
+        schema:
+          $ref: '#/definitions/Environment'
+      responses:
+        '201':
+          description: Successfully created the specified Environment.
+          schema:
+            $ref: '#/definitions/Environment'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to create the Environment resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a naming conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentID}:
+    delete:
+      description: Deletes the specified Environment resource.
+      summary: deleteEnvironment
+      tags:
+      - Environments
+      operationId: deleteEnvironment
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Environment.
+      responses:
+        '202':
+          description: The Environment resource has been marked for deletion. The Environment will be deleted after the underlying resources have been deleted.
+          schema:
+            $ref: '#/definitions/Environment'
+          headers: {}
+        '204':
+          description: Successfully deleted the specified Environment resource. No content returned.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Environment resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: >-
+            Failed to delete the requested Environment resource.
+
+
+            The Environment contains references to other objects. Delete the referenced objects or remove the references, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Returns information for the specified Environment.
+      summary: getEnvironment
+      tags:
+      - Environments
+      operationId: getEnvironment
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Environment.
+      responses:
+        '200':
+          description: Successfully returned information for the specified Environment resource.
+          schema:
+            $ref: '#/definitions/Environment'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to read the Environment resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: >
+        Creates a new Environment or updates an existing Environment resource.
+      summary: updateEnvironment
+      tags:
+      - Environments
+      operationId: updateEnvironment
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Environment.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Environment to create or the updates to make to an existing Environment.
+        schema:
+          $ref: '#/definitions/Environment'
+      responses:
+        '200':
+          description: Successfully updated the specified Environment resource.
+          schema:
+            $ref: '#/definitions/Environment'
+          headers: {}
+        '201':
+          description: Successfully created the specified Environment resource.
+          schema:
+            $ref: '#/definitions/Environment'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Environment resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentID}/gateways:
+    get:
+      description: >
+        Returns a list of all Gateways in the specified Environment.
+      summary: listGateways
+      tags:
+      - Gateways
+      operationId: listGateways
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all Gateways.
+          schema:
+            $ref: '#/definitions/GatewayList'
+          headers: {}
+        '400':
+          description: Bad request. Check validity of query parameters.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Gateway resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: >
+        Creates a new Gateway resource.
+      summary: createGateway
+      tags:
+      - Gateways
+      operationId: createGateway
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Gateway resource to create.
+        schema:
+          $ref: '#/definitions/Gateway'
+      responses:
+        '201':
+          description: Successfully created the Gateway resource.
+          schema:
+            $ref: '#/definitions/Gateway'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to create the Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Gateway resource not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a naming conflict with an existing Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to create a Gateway resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentID}/gateways/{gatewayID}:
+    delete:
+      description: Deletes the specified Gateway resource.
+      summary: deleteGateway
+      tags:
+      - Gateways
+      operationId: deleteGateway
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: gatewayID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Gateway.
+      responses:
+        '202':
+          description: >-
+            The resource has been marked for deletion. The resource will be deleted after the config for the resource
+
+            is cleared from all placements. Resource deletion will fail if config cannot be cleared from the placement.
+          schema:
+            $ref: '#/definitions/Gateway'
+          headers: {}
+        '204':
+          description: Successfully deleted the specified resource. No content is returned.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to delete the Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: >-
+            The request to delete a Gateway resource failed.
+
+            The Gateway is referenced by an App Component(s) and cannot be deleted.
+
+            Delete the App Component or remove the reference, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to delete a Gateway resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Returns information for the specified Gateway resource.
+      summary: getGateway
+      tags:
+      - Gateways
+      operationId: getGateway
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: gatewayID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Gateway.
+      responses:
+        '200':
+          description: Successfully retrieved the requested Gateway resource.
+          schema:
+            $ref: '#/definitions/Gateway'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to read the Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Gateway resource not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    patch:
+      description: >
+        Creates a new Gateway or updates an existing Gateway resource.
+      summary: patchGateway
+      tags:
+      - Gateways
+      operationId: patchGateway
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: gatewayID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Gateway.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Gateway resource to create or the updates to make to an existing Gateway resource.
+        schema:
+          $ref: '#/definitions/Gateway'
+      responses:
+        '200':
+          description: Successfully updated the specified Gateway resource.
+          schema:
+            $ref: '#/definitions/Gateway'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Gateway resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update or create a Gateway resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: >
+        Updates an existing Gateway resource.
+      summary: updateGateway
+      tags:
+      - Gateways
+      operationId: updateGateway
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Environment that contains the Gateway resource.
+      - name: gatewayID
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The ID of the Gateway.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Update an existing Gateway resource.
+        schema:
+          $ref: '#/definitions/Gateway'
+      responses:
+        '200':
+          description: Successfully updated the specified Gateway resource.
+          schema:
+            $ref: '#/definitions/Gateway'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Gateway resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Gateway resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update or create a Gateway resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /gateways:
+    get:
+      description: >
+        Returns a list of all Gateways objects
+      summary: listAllGateways
+      tags:
+      - Gateways
+      operationId: listAllGateways
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all Gateways.
+          schema:
+            $ref: '#/definitions/GatewayListAll'
+          headers: {}
+        '400':
+          description: Bad request. Check validity of query parameters.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Gateway resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentUid}/apps/{appUid}/tcpudp-components:
+    get:
+      description: >
+        Returns a list of all TcpUdp Components in the specified Environment.
+      summary: listTcpUdpComponents
+      tags:
+      - TcpUdp Components
+      operationId: listTcpUdpComponents
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all TcpUdp Components.
+          schema:
+            $ref: '#/definitions/TcpUdpComponentList'
+          headers: {}
+        '400':
+          description: Bad request. Check validity of query parameters.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Component resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: >
+        Creates a new TcpUdp Component resource.
+      summary: createTcpUdpComponent
+      tags:
+      - Components
+      operationId: createTcpUdpComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the TcpUdp Component resource to create.
+        schema:
+          $ref: '#/definitions/TcpUdpComponent'
+      responses:
+        '201':
+          description: Successfully created the Component resource.
+          schema:
+            $ref: '#/definitions/TcpUdpComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to create the TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to create a TcpUdp Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentUid}/apps/{appUid}/tcpudp-components/{tcpUdpComponentUid}:
+    delete:
+      description: Deletes the specified TcpUdp Component resource.
+      summary: deleteTcpUdpComponent
+      tags:
+      - TcpUdp Components
+      operationId: deleteTcpUdpComponent
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: tcpUdpComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the TcpUdp Component.
+      responses:
+        '202':
+          description: >-
+            The resource has been marked for deletion. The resource will be deleted after the config for the resource
+
+            is cleared from all placements. Resource deletion will fail if config cannot be cleared from the placement.
+          schema:
+            $ref: '#/definitions/TcpUdpComponent'
+          headers: {}
+        '204':
+          description: Successfully deleted the specified resource. No content is returned.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to delete the TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to delete a TcpUdp Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Returns information for the specified TcpUdp Component resource.
+      summary: getTcpUdpComponent
+      tags:
+      - TcpUdp Components
+      operationId: getTcpUdpComponent
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: tcpUdpComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the TcpUdp Component.
+      responses:
+        '200':
+          description: Successfully retrieved the requested TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/TcpUdpComponent'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to read the TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: TcpUdp Component resource not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    patch:
+      description: >
+        Updates an existing TcpUdp Component resource.
+      summary: patchTcpUdpComponent
+      tags:
+      - TcpUdp Components
+      operationId: patchTcpUdpComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: tcpUdpComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the TcpUdp Component.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the TcpUdp Component resource to create or the updates to make to an existing TcpUdp Component resource.
+        schema:
+          $ref: '#/definitions/TcpUdpComponent'
+      responses:
+        '200':
+          description: Successfully updated the specified TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/TcpUdpComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: TcpUdp Component resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update or create a TcpUdp Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: >
+        Updates an existing TcpUdp Component resource.
+      summary: updateTcpUdpComponent
+      tags:
+      - TcpUdp Components
+      operationId: updateTcpUdpComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the TcpUdp Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the TcpUdp Component resource.
+      - name: tcpUdpComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the TcpUdp Component.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Update an existing TcpUdp Component resource.
+        schema:
+          $ref: '#/definitions/TcpUdpComponent'
+      responses:
+        '200':
+          description: Successfully updated the specified TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/TcpUdpComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the TcpUdp Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: TcpUdp Component resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update a TcpUdp Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentUid}/apps/{appUid}/web-components:
+    post:
+      description: >
+        Creates a new Web Component resource.
+      summary: createWebComponent
+      tags:
+      - Components
+      operationId: createWebComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Web Component resource to create.
+        schema:
+          $ref: '#/definitions/WebComponent'
+      responses:
+        '201':
+          description: Successfully created the Component resource.
+          schema:
+            $ref: '#/definitions/WebComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to create the Web Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to create a Web Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Returns a list of all Web Components in the specified Environment.
+      summary: listWebComponents
+      tags:
+      - Web Components
+      operationId: listWebComponents
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        default: 20
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        exclusiveMaximum: false
+        exclusiveMinimum: false
+        description: ''
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: descending
+        type: string
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - environmentRef.uid
+        - description
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: filterOn
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - name
+          - description
+          - uid
+        description: ''
+      - name: filterBy
+        in: query
+        required: false
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: Successfully retrieved a list of all Web Components.
+          schema:
+            $ref: '#/definitions/WebComponentList'
+          headers: {}
+        '400':
+          description: Bad request. Check validity of query parameters.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Component resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /environments/{environmentUid}/apps/{appUid}/web-components/{webComponentUid}:
+    delete:
+      description: Deletes the specified Web Component resource.
+      summary: deleteWebComponent
+      tags:
+      - Web Components
+      operationId: deleteWebComponent
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: webComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Web Component.
+      responses:
+        '202':
+          description: >-
+            The resource has been marked for deletion. The resource will be deleted after the config for the resource
+
+            is cleared from all placements. Resource deletion will fail if config cannot be cleared from the placement.
+          schema:
+            $ref: '#/definitions/WebComponent'
+          headers: {}
+        '204':
+          description: Successfully deleted the specified resource. No content is returned.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to delete the Web Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to delete a Web Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: >
+        Returns information for the specified Web Component resource.
+      summary: getWebComponent
+      tags:
+      - Web Components
+      operationId: getWebComponent
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: webComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Web Component.
+      responses:
+        '200':
+          description: Successfully retrieved the requested Web Component resource.
+          schema:
+            $ref: '#/definitions/WebComponent'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to read the Web Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Web Component resource not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    patch:
+      description: >
+        Updates an existing Web Component resource.
+      summary: patchWebComponent
+      tags:
+      - Web Components
+      operationId: patchWebComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: webComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Web Component.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Web Component resource to create or the updates to make to an existing Web Component resource.
+        schema:
+          $ref: '#/definitions/WebComponent'
+      responses:
+        '200':
+          description: Successfully updated the specified Web Component resource.
+          schema:
+            $ref: '#/definitions/WebComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Web Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Web Component resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update or create a Web Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: >
+        Updates an existing Web Component resource.
+      summary: updateWebComponent
+      tags:
+      - Web Components
+      operationId: updateWebComponent
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: environmentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Environment that contains the Web Component resource.
+      - name: appUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the App that contains the Web Component resource.
+      - name: webComponentUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Web Component.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Update an existing Web Component resource.
+        schema:
+          $ref: '#/definitions/WebComponent'
+      responses:
+        '200':
+          description: Successfully updated the specified Web Component resource.
+          schema:
+            $ref: '#/definitions/WebComponent'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Web Component resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Web Component resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update a Web Component resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /platform/agent-keys:
+    get:
+      description: Returns the status and metadata for all of the Agent API Keys.
+      summary: listAgentKeys
+      tags:
+      - AgentKeys
+      operationId: listAgentKeys
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Successfully returned the status and metadata for all of the Agent API Keys.
+          schema:
+            $ref: '#/definitions/ListAgentKeyResponse'
+          headers: {}
+    post:
+      description: Creates a new AgentKey resource.
+      summary: createAgentKey
+      tags:
+      - AgentKeys
+      operationId: createAgentKey
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/AgentKey'
+      responses:
+        '201':
+          description: The Agent Key resource has been created.
+          schema:
+            $ref: '#/definitions/AgentKey'
+          headers: {}
+        '400':
+          description: Bad input parameter or URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          examples:
+            application/json:
+              code: 12345
+              message: 'Error creating the Agent Key: could not parse the request payload. Check the format of the request, then try again.'
+          headers: {}
+        '409':
+          description: The request failed due to a conflict with an existing Agent API Key resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          examples:
+            application/json:
+              code: 12345
+              message: 'Error creating the Agent Key: an Agent Key with that name already exists. Use a unique name for the Agent Key, then try again.'
+          headers: {}
+  /platform/agent-keys/{agentKeyName}:
+    get:
+      description: Returns the status and metadata for a single Agent API Key
+      summary: getAgentKey
+      tags:
+      - AgentKeys
+      operationId: getAgentKey
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: agentKeyName
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Agent API Key.
+      responses:
+        '200':
+          description: Successfully returned the details for an Agemt API Key.
+          schema:
+            $ref: '#/definitions/AgentKey'
+          headers: {}
+        '404':
+          description: Agent API Key not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          examples:
+            application/json:
+              code: 12345
+              message: 'Error getting the agent API key: the specified key does not exist. Check the agent key name, then try again.'
+          headers: {}
+    patch:
+      description: Updates the display name of an existing Agent Key.
+      summary: updateAgentKey
+      tags:
+      - AgentKeys
+      operationId: updateAgentKey
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: agentKeyName
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Agent API Key.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/AgentKey'
+      responses:
+        '200':
+          description: Successfully updated the existing Agent API Key.
+          schema:
+            $ref: '#/definitions/AgentKey'
+          headers: {}
+        '400':
+          description: Bad input parameter or URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          examples:
+            application/json:
+              code: 12345
+              message: 'Error updating the Agent API Key: could not parse the request payload. Check the format of the request, then try again.'
+          headers: {}
+        '404':
+          description: Agent API Key not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          examples:
+            application/json:
+              code: 12345
+              message: 'Error updating the Agent API Key: the specified Agent Key does not exist. Check the Agent Key name, then try again.'
+          headers: {}
+  /platform/integrations:
+    get:
+      description: Returns an unfiltered list of account Integrations.
+      summary: listIntegrations
+      tags:
+      - Integrations
+      operationId: listIntegrations
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Successfully retreived all Integration accounts.
+          schema:
+            $ref: '#/definitions/ListIntegrationResponse'
+          headers: {}
+    post:
+      description: Creates a new Integration account.
+      summary: addIntegration
+      tags:
+      - Integrations
+      operationId: addIntegration
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Integration account to be added.
+        schema:
+          $ref: '#/definitions/Integration'
+      responses:
+        '201':
+          description: Successfully created the requested Integration.
+          schema:
+            $ref: '#/definitions/Integration'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a conflict with an existing Integration.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /platform/integrations/{integrationName}:
+    delete:
+      description: Deletes the specified Integration account resource.
+      summary: deleteIntegration
+      tags:
+      - Integrations
+      operationId: deleteIntegration
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: integrationName
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Integration resource.
+      responses:
+        '204':
+          description: Successfully deleted the specified Integration resource.
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: Gets information about a specific Integration account.
+      summary: getIntegration
+      tags:
+      - Integrations
+      operationId: getIntegration
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: integrationName
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Integration resource.
+      responses:
+        '200':
+          description: Successfully retrieved the requested Integration account.
+          schema:
+            $ref: '#/definitions/Integration'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Integration not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: Updates an Integration account.
+      summary: updateIntegration
+      tags:
+      - Integrations
+      operationId: updateIntegration
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: integrationName
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The name of the Integration resource.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: true
+        description: ''
+        schema:
+          $ref: '#/definitions/Integration'
+      responses:
+        '200':
+          description: Successfully received the request to update the specified Integration account.
+          schema:
+            $ref: '#/definitions/Integration'
+          headers: {}
+        '201':
+          description: Successfully updated the specified Integration account.
+          schema:
+            $ref: '#/definitions/Integration'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /security/policies:
+    get:
+      description: Returns a list of Policy metadata objects for all of the Policies.
+      summary: listPolicies
+      tags:
+      - Policies
+      operationId: listPolicies
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Successfully retrieved a list of Policies.
+          schema:
+            $ref: '#/definitions/PolicyList'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: >
+        Creates a new Policy resource.
+      summary: createPolicy
+      tags:
+      - Policies
+      operationId: createPolicy
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/Policy'
+      responses:
+        '201':
+          description: Successfully created the specified Policy resource.
+          schema:
+            $ref: '#/definitions/PolicyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a naming conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /security/policies/{policyName}:
+    delete:
+      description: Deletes the specified Policy resource.
+      summary: deletePolicy
+      tags:
+      - Policies
+      operationId: deletePolicy
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: policyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Policy.
+      responses:
+        '204':
+          description: The specified Policy resource was successfully deleted.
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: >-
+            The request to delete the specified Policy resource failed.
+
+            The Policy is referenced by active objects and cannot be deleted. Delete the referencing objects or remove the references, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: Returns information for a specific Policy resource.
+      summary: getPolicy
+      tags:
+      - Policies
+      operationId: getPolicy
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: policyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Policy.
+      responses:
+        '200':
+          description: Sucessfully retrieved the requested Policy.
+          schema:
+            $ref: '#/definitions/PolicyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: Creates a new Policy or updates an existing Policy resource.
+      summary: updatePolicy
+      tags:
+      - Policies
+      operationId: updatePolicy
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: policyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Policy.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/Policy'
+      responses:
+        '200':
+          description: Sucessfully updated the specified Policy resource.
+          schema:
+            $ref: '#/definitions/PolicyStatus'
+          headers: {}
+        '201':
+          description: Successfully created the requested Policy resource.
+          schema:
+            $ref: '#/definitions/PolicyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /security/strategies:
+    get:
+      description: Returns a list of Strategy metadata objects for all of the Strategies.
+      summary: StrategyServiceList
+      tags:
+      - Strategies
+      operationId: StrategyServiceList
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Successfully retrieved a list of Strategies.
+          schema:
+            $ref: '#/definitions/StrategyList'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: >
+        Creates a new Strategy resource.
+      summary: StrategyServicePost
+      tags:
+      - Strategies
+      operationId: StrategyServicePost
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/Strategy'
+      responses:
+        '201':
+          description: Successfully created the specified Strategy resource.
+          schema:
+            $ref: '#/definitions/StrategyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a naming conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /security/strategies/{strategyName}:
+    delete:
+      description: Deletes the specified Strategy resource.
+      summary: StrategyServiceDelete
+      tags:
+      - Strategies
+      operationId: StrategyServiceDelete
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: strategyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Strategy.
+      responses:
+        '204':
+          description: The specified Strategy resource was successfully deleted.
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: >-
+            The request to delete the specified Strategy resource failed.
+
+            The Strategy is referenced by active objects and cannot be deleted. Delete the referencing objects or remove the references, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: Returns information for a specific Strategy resource.
+      summary: StrategyServiceGet
+      tags:
+      - Strategies
+      operationId: StrategyServiceGet
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: strategyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Strategy.
+      responses:
+        '200':
+          description: Sucessfully retrieved the requested Strategy.
+          schema:
+            $ref: '#/definitions/StrategyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: Creates a new Strategy or updates an existing Strategy resource.
+      summary: StrategyServicePut
+      tags:
+      - Strategies
+      operationId: StrategyServicePut
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: strategyName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Strategy.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: ''
+        schema:
+          $ref: '#/definitions/Strategy'
+      responses:
+        '200':
+          description: Sucessfully updated the specified Strategy resource.
+          schema:
+            $ref: '#/definitions/StrategyStatus'
+          headers: {}
+        '201':
+          description: Successfully created the requested Strategy resource.
+          schema:
+            $ref: '#/definitions/StrategyStatus'
+          headers: {}
+        '400':
+          description: Bad input parameter, or possibly a bad URI. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /services:
+    get:
+      description: >
+        Returns a metadata list of the requested resource. The resources that can be queried is currently restricted to published-apis.
+      summary: listResources
+      tags:
+      - Services
+      operationId: listResources
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: resource
+        in: query
+        required: true
+        enum:
+        - published-apis
+        type: string
+        description: Desired resource to list.
+      - name: environment
+        in: query
+        required: false
+        type: string
+        maxLength: 2048
+        description: Filter desired resource based on the environment.
+      responses:
+        '200':
+          description: Successfully retrieved a metadata list of the requested resource.
+          schema:
+            type: array
+            default: ''
+            items:
+              $ref: '#/definitions/Metadata'
+          headers: {}
+        '400':
+          description: The resource defined in the query parameters could not be found or is not yet supported. Check the input for typos and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The environment defined in the query parameters could not be found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /services/errorsets:
+    get:
+      description: Returns a list of all the Error Sets.
+      summary: listErrorSets
+      tags:
+      - ErrorSets
+      operationId: listErrorSets
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Successfully retrieved a list of Error Sets.
+          schema:
+            $ref: '#/definitions/ErrorSetList'
+          headers: {}
+  /services/errorsets/{errorSetName}:
+    get:
+      description: Returns the information for a specific Error Set.
+      summary: getErrorSet
+      tags:
+      - ErrorSets
+      operationId: getErrorSet
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: errorSetName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: The name of the Error Set.
+      responses:
+        '200':
+          description: Successfully retrieved the requested Error Set.
+          schema:
+            $ref: '#/definitions/ErrorSet'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /sites:
+    get:
+      description: Returns a list of all Sites.
+      summary: listSites
+      tags:
+      - Sites
+      operationId: listSites
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: startIndex
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: count
+        in: query
+        required: false
+        type: integer
+        format: int32
+        minimum: 1
+        exclusiveMinimum: false
+        description: ''
+      - name: sortBy
+        in: query
+        required: false
+        enum:
+        - name
+        - uid
+        - createTime
+        - updateTime
+        default: updateTime
+        type: string
+      - name: sortOrder
+        in: query
+        required: false
+        enum:
+        - ascending
+        - descending
+        default: ascending
+        type: string
+      responses:
+        '200':
+          description: Successfully retrieved a list of all of the configured Sites.
+          schema:
+            $ref: '#/definitions/SiteList'
+          headers: {}
+        '400':
+          description: Bad request. Check validity of query parameters.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Site resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    post:
+      description: Creates a new Site resource.
+      summary: createSite
+      tags:
+      - Sites
+      operationId: createSite
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: true
+        description: Defines the Site resource to be added.
+        schema:
+          $ref: '#/definitions/Site'
+      responses:
+        '201':
+          description: Successfully created the requested Site.
+          schema:
+            $ref: '#/definitions/Site'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Site resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to create a Site resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /sites/{siteUid}:
+    delete:
+      description: Deletes the specified Site resource.
+      summary: deleteSite
+      tags:
+      - Sites
+      operationId: deleteSite
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: siteUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Site.
+      responses:
+        '204':
+          description: Successfully deleted the specified Site resource.
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Site resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '409':
+          description: The request failed due to a conflict with an existing resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to delete a Site resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    get:
+      description: Returns information about a specified Site resource.
+      summary: getSite
+      tags:
+      - Sites
+      operationId: getSite
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: siteUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Site.
+      responses:
+        '200':
+          description: Successfully retrieved the requested Site resource.
+          schema:
+            $ref: '#/definitions/Site'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Site resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    patch:
+      description: >
+        Creates a new Site or updates an existing Site resource.
+      summary: patchSite
+      tags:
+      - Sites
+      operationId: patchSite
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: siteUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Site.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: false
+        description: Defines the Site resource to create or the updates to make to an existing Site resource.
+        schema:
+          $ref: '#/definitions/Site'
+      responses:
+        '200':
+          description: Successfully updated the specified Site resource.
+          schema:
+            $ref: '#/definitions/Site'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to update the Site resource.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Site resource not found. Update failed.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update or create a Site resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+    put:
+      description: Update an existing Site resource.
+      summary: updateSite
+      tags:
+      - Sites
+      operationId: updateSite
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: siteUid
+        in: path
+        required: true
+        type: string
+        maxLength: 2048
+        description: The Uid of the Site.
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: true
+        description: ''
+        schema:
+          $ref: '#/definitions/Site'
+      responses:
+        '200':
+          description: Successfully received the request to update the specified Site resource.
+          schema:
+            $ref: '#/definitions/Site'
+          headers: {}
+        '400':
+          description: Bad request. Check the validity of the JSON body provided in the request and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '403':
+          description: Access denied. User does not have access to list the Site resources.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: Site resource not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '429':
+          description: >-
+            The request to update a Site resource failed due to exceeding request processing threshold.
+
+            Allow the server to process existing requests, then try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /templates/{templateType}:
+    get:
+      description: Returns a list of available templates
+      summary: listTemplates
+      tags:
+      - Templates
+      operationId: listTemplates
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: templateType
+        in: path
+        required: true
+        enum:
+        - gateways
+        - web-components
+        - web-components-locations
+        - tcp-udp-components
+        type: string
+        description: Type of the template.
+      responses:
+        '200':
+          description: Successfully retrieves templates list.
+          schema:
+            type: array
+            default: ''
+            items:
+              type: string
+          headers: {}
+        '403':
+          description: The request failed due to insufficient privileges.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '500':
+          description: The request cannot be processed because of an internal server error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /templates/{templateType}/{templateName}:
+    get:
+      description: Returns the specified template contents
+      summary: getTemplate
+      tags:
+      - Template
+      operationId: getTemplate
+      deprecated: false
+      produces:
+      - text/plain
+      - application/json
+      parameters:
+      - name: templateType
+        in: path
+        required: true
+        enum:
+        - gateways
+        - web-components
+        - web-components-locations
+        - tcp-udp-components
+        type: string
+        description: Type of the template.
+      - name: templateName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: Name of the template you want to access.
+      responses:
+        '200':
+          description: Successfully retrieves the specified template contents.
+          schema:
+            type: string
+            default: ''
+          headers: {}
+        '403':
+          description: The request failed due to insufficient privileges.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '500':
+          description: The request cannot be processed because of an internal server error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+  /templates/{templateType}/{templateName}/schema:
+    get:
+      description: Returns the specified template JSON schema
+      summary: getSchema
+      tags:
+      - Template schema
+      operationId: getSchema
+      deprecated: false
+      produces:
+      - application/json+schema
+      - application/json
+      parameters:
+      - name: templateType
+        in: path
+        required: true
+        enum:
+        - gateways
+        - web-components
+        - web-components-locations
+        - tcp-udp-components
+        type: string
+        description: Type of the template.
+      - name: templateName
+        in: path
+        required: true
+        type: string
+        maxLength: 100
+        description: Name of the template you want to access.
+      responses:
+        '200':
+          description: Successfully retrieves JSON schema for the specified template.
+          schema:
+            type: object
+            default: ''
+          headers: {}
+        '403':
+          description: The request failed due to insufficient privileges.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '404':
+          description: The resource defined in the URI could not be found. Check the URI for errors and try again.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+        '500':
+          description: The request cannot be processed because of an internal server error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+          headers: {}
+definitions:
+  AWSAccessKeyCredential:
+    title: AWSAccessKeyCredential
+    allOf:
+    - $ref: '#/definitions/Credential'
+    - type: object
+      properties:
+        accessKeyID:
+          type: string
+          maxLength: 2048
+        secretAccessKey:
+          type: string
+          maxLength: 2048
+      required:
+      - accessKeyID
+      - secretAccessKey
+  AWSIntegration:
+    title: AWSIntegration
+    allOf:
+    - $ref: '#/definitions/IntegrationState'
+    - type: object
+      properties:
+        credential:
+          $ref: '#/definitions/AWSAccessKeyCredential'
+        endpointUri:
+          type: string
+          maxLength: 2048
+      required:
+      - credential
+  AgentKey:
+    title: AgentKey
+    description: An API key for Agent.
+    type: object
+    properties:
+      currentStatus:
+        type: object
+        allOf:
+        - $ref: '#/definitions/AgentKeyCurrentStatus'
+        - description: Contains the current status of the AgentKeyCurrentStatus
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - metadata
+  AgentKeyCurrentStatus:
+    title: AgentKeyCurrentStatus
+    description: Contains the current status of the AgentKeyCurrentStatus
+    type: object
+    properties:
+      agentKey:
+        description: The API key used by data plane agents.
+        type: string
+        maxLength: 2048
+      revokedTime:
+        description: If present, indicates the time that the key was revoked.
+        type: string
+        format: date-time
+    required:
+    - agentKey
+  App:
+    title: App
+    description: An App is a collection of Components.
+    type: object
+    properties:
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+      tcpUdpComponentRefs:
+        description: Reference to all TcpUdp Component resources in this Environment. This is a read only field populated in the server response.
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      webComponentRefs:
+        description: Reference to all Web Component resources in this Environment. This is a read only field populated in the server response.
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+    required:
+    - metadata
+  AppList:
+    title: AppList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/App'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  AppListAll:
+    title: AppListAll
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/App'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  ChildrenState:
+    title: ChildrenState
+    description: Roll up of child resource states.
+    type: object
+    properties:
+      configured:
+        description: The number of child resources that have a complete and valid configuration.
+        type: integer
+        minimum: 0
+        format: int32
+      configuring:
+        description: The number of child resources that are in the process of being configured.
+        type: integer
+        minimum: 0
+        format: int32
+      deleting:
+        description: The number of child resources that are in the process of being deleted.
+        type: integer
+        minimum: 0
+        format: int32
+      error:
+        description: The number of child resources that have encountered an error during the configuration process.
+        type: integer
+        minimum: 0
+        format: int32
+      total:
+        description: The total number of child resources.
+        type: integer
+        minimum: 0
+        format: int32
+    required:
+    - configured
+    - configuring
+    - deleting
+    - error
+    - total
+  Condition:
+    title: Condition
+    type: object
+    properties:
+      message:
+        description: A human-readable message that provides additional information about the configuration operation.
+        type: string
+        maxLength: 2048
+      type:
+        description: The condition type.
+        type: string
+        maxLength: 500
+    required:
+    - message
+    - type
+  Environment:
+    title: Environment
+    description: An Environment is a logical container that you can use to organize your Apps. A few commonly-used examples of Environments are "dev" and "production".
+    type: object
+    properties:
+      appRefs:
+        description: Reference to all App resources in this Environment. . This is a read only field populated in server responses.
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      gatewayRefs:
+        description: Reference to all Gateway resources in this Environment. This is a read only field populated in server the response.
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      gatewaySettings:
+        type: object
+        allOf:
+        - $ref: '#/definitions/GatewaySettings'
+        - description: The current snapshot of the gateway settings that are reflected in the configuration on NGINX instances referenced by this Gateway.
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+      tcpUdpComponentSettings:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TcpUdpComponentSettings'
+        - description: The current snapshot of the TCP/UDP component settings that are reflected in the configuration on NGINX instances referenced by this TCP/UDP Component.
+      webComponentLocationsSettings:
+        type: object
+        allOf:
+        - $ref: '#/definitions/WebComponentLocationsSettings'
+        - description: The current snapshot of the web component locations settings that are reflected in the configuration on NGINX instances referenced by this Web Component Locations.
+      webComponentSettings:
+        type: object
+        allOf:
+        - $ref: '#/definitions/WebComponentSettings'
+        - description: The current snapshot of the web component settings that are reflected in the configuration on NGINX instances referenced by this Web Component.
+    required:
+    - metadata
+  EnvironmentList:
+    title: EnvironmentList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Environment'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  ErrorCode:
+    title: ErrorCode
+    type: object
+    properties:
+      code:
+        example: 404
+        type: integer
+        minimum: 400
+        maximum: 599
+        format: int32
+      message:
+        example:
+          status: 404
+          message: Resource not found
+        type: string
+    required:
+    - code
+    - message
+  ErrorDetail:
+    title: ErrorDetail
+    type: object
+    properties:
+      description:
+        description: >-
+          A detailed error message returned by the server.
+
+
+          These messages contain the following information, where applicable:
+
+
+          - What happened.
+
+          - Why it happened.
+
+          - What the consequences are (if any).
+
+          - Recommended action to take to resolve the issue.
+        example: 'Error doing <action>: <reason for error>. This can lead to <potential consequences>. Try <action> to resolve the issue.'
+        type: string
+        maxLength: 500
+    required:
+    - description
+  ErrorModel:
+    title: ErrorModel
+    type: object
+    properties:
+      code:
+        description: A numeric error code that can be used to identify errors for support purposes.
+        example: 1234567
+        type: integer
+        format: int32
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorDetail'
+      message:
+        description: A human-readable message, in English, that describes the error.
+        example: Error doing <action>.
+        type: string
+        maxLength: 2048
+    required:
+    - code
+    - message
+  ErrorSet:
+    title: ErrorSet
+    description: Defines the set of error messages to be returned for HTTP errors.
+    type: object
+    properties:
+      currentStatus:
+        $ref: '#/definitions/ErrorSetCurrentStatus'
+      desiredState:
+        $ref: '#/definitions/ErrorSetDesiredState'
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - desiredState
+    - metadata
+  ErrorSetCurrentStatus:
+    title: ErrorSetCurrentStatus
+    type: object
+    properties:
+      errorCodes:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorCode'
+  ErrorSetDesiredState:
+    title: ErrorSetDesiredState
+    type: object
+    properties:
+      errorCodes:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorCode'
+  ErrorSetList:
+    title: ErrorSetList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorSet'
+  Gateway:
+    title: Gateway
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      ingress:
+        $ref: '#/definitions/Ingress'
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - metadata
+  GatewayIngressUri:
+    title: GatewayIngressUri
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      matchMethod:
+        type: object
+        allOf:
+        - $ref: '#/definitions/GatewayURIMatchMethod'
+        - description: Specifies how to determine a match between an incoming Web URI and configured Web URI.
+          default: EXACT
+      serverPoolPort:
+        description: The port number used when the IngressUri is deployed to an Instance that's a member of a BIG-IP server pool.
+        type: integer
+        format: int32
+      tls:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TLS'
+        - description: TLS settings applicable to URIs.
+  GatewayList:
+    title: GatewayList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Gateway'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  GatewayListAll:
+    title: GatewayListAll
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Gateway'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  GatewaySettings:
+    title: GatewaySettings
+    description: The current snapshot of the gateway settings that are reflected in the configuration on NGINX instances referenced by this Gateway.
+    type: object
+    properties:
+      templateRef:
+        type: string
+        maxLength: 2048
+  GatewayURIMatchMethod:
+    title: GatewayURIMatchMethod
+    description: Specifies how to determine a match between an incoming Web URI and configured Web URI.
+    type: string
+    enum:
+    - PREFIX
+    - REGEX
+    - SUFFIX
+    - EXACT
+  Integration:
+    title: Integration
+    example:
+      currentStatus:
+        credential:
+          accessKeyID: AKIAJ3N2PZUMZE3Y67ZA
+          secretAccessKey: '*********'
+          type: AWS_ACCESS_KEY_CREDENTIAL
+        type: AWS_INTEGRATION
+      desiredState:
+        credential:
+          accessKeyID: AKIAJ3N2PZUMZE3Y67ZA
+          secretAccessKey: '*********'
+          type: AWS_ACCESS_KEY_CREDENTIAL
+        type: AWS_INTEGRATION
+      metadata:
+        createTime: 2019-09-18T16:42:15.1183523Z
+        description: AWS integration for us-west-1
+        displayName: UsWest1-Integration
+        endpointUri: https://ec2.us-west-1.amazonaws.com
+        name: my-aws-integration
+        tags:
+        - us-west-1
+        uid: 619887de-a748-4931-853d-c6b706f95ddf
+        updateTime: 2019-09-18T16:42:15.1183523Z
+    type: object
+    properties:
+      currentStatus:
+        $ref: '#/definitions/AWSIntegration'
+      desiredState:
+        $ref: '#/definitions/AWSIntegration'
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - desiredState
+    - metadata
+  HashLBMethod:
+    title: HashLBMethod
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+      properties:
+        consistentHash:
+          type: object
+          allOf:
+          - $ref: '#/definitions/ServiceConfigState'
+          - default: DISABLED
+        userKey:
+          type: string
+          maxLength: 2048
+      required:
+      - userKey
+  IPHashLB:
+    title: IPHashLB
+    description: IP Hash Load Balancing only applicable to TcpUdp Components.
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+  Ingress:
+    title: Ingress
+    type: object
+    properties:
+      placement:
+        $ref: '#/definitions/Placement'
+      tls:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TLS'
+        - description: TLS settings applicable to URIs.
+      uris:
+        description: >-
+          Defines the URI in Gateways.
+
+
+          For URIs in Gateways, `uris` must be a complete URI that follows the format `<http|https>://host[:port]`;
+
+          additionally each URI can have a match method specified and an HTTPS URI can include TLS information.
+            Examples:
+            - `http://www.f5.com`
+            - `https://www.f5.com`
+            - `http://www.f5.com:8080`
+            - `http://*.info.f5.com`
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/GatewayIngressUri'
+  InstanceGroupRef:
+    title: InstanceGroupRef
+    type: object
+    properties:
+      listenIps:
+        description: The list of Listen IP addresses.
+        type: array
+        items:
+          type: string
+          maxLength: 2048
+          pattern: ^(?:(?:(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$)|(?:\[\s*(?:(?:(?:[0-9a-fA-F]{1,4}:){7}(?:[0-9a-fA-F]{1,4}|:))|(?:(?:[0-9a-fA-F]{1,4}:){6}(?::[0-9a-fA-F]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){5}(?:(?:(?::[0-9a-fA-F]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){4}(?:(?:(?::[0-9a-fA-F]{1,4}){1,3})|(?:(?::[0-9a-fA-F]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){3}(?:(?:(?::[0-9a-fA-F]{1,4}){1,4})|(?:(?::[0-9a-fA-F]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){2}(?:(?:(?::[0-9a-fA-F]{1,4}){1,5})|(?:(?::[0-9a-fA-F]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){1}(?:(?:(?::[0-9a-fA-F]{1,4}){1,6})|(?:(?::[0-9a-fA-F]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9a-fA-F]{1,4}){1,7})|(?:(?::[0-9a-fA-F]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(?:%.+)?](?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?\s*$))
+        maxLength: 2048
+        pattern: ^(?:(?:(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$)|(?:\[\s*(?:(?:(?:[0-9a-fA-F]{1,4}:){7}(?:[0-9a-fA-F]{1,4}|:))|(?:(?:[0-9a-fA-F]{1,4}:){6}(?::[0-9a-fA-F]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){5}(?:(?:(?::[0-9a-fA-F]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){4}(?:(?:(?::[0-9a-fA-F]{1,4}){1,3})|(?:(?::[0-9a-fA-F]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){3}(?:(?:(?::[0-9a-fA-F]{1,4}){1,4})|(?:(?::[0-9a-fA-F]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){2}(?:(?:(?::[0-9a-fA-F]{1,4}){1,5})|(?:(?::[0-9a-fA-F]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){1}(?:(?:(?::[0-9a-fA-F]{1,4}){1,6})|(?:(?::[0-9a-fA-F]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9a-fA-F]{1,4}){1,7})|(?:(?::[0-9a-fA-F]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(?:%.+)?](?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?\s*$))
+      name:
+        example: main web
+        type: string
+        maxLength: 100
+      ref:
+        example: 570406ec-946a-4f3f-a609-da54db069d74
+        type: string
+        maxLength: 2048
+    required:
+    - ref
+  Job:
+    title: Job
+    description: A reference used to track pending request sent to DPM.
+    type: object
+    properties:
+      correlationID:
+        example: ADC-7980fd96-1f59-4f21-a1ac-02e1689246f2
+        type: string
+        maxLength: 2048
+      createTime:
+        example: 2019-07-29T09:12:33.001Z
+        type: string
+        format: date-time
+    required:
+    - correlationID
+    - createTime
+  LeastConnLB:
+    title: LeastConnLB
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+  LeastTimeLBMethod:
+    title: LeastTimeLBMethod
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+      properties:
+        latencyParameter:
+          type: object
+          allOf:
+          - $ref: '#/definitions/LatencyParameter'
+          - description: >-
+              Values applicable to a TcpUdp Component are: [HEADER, LAST_BYTE, LAST_BYTE_INFLIGHT];
+
+              Values applicable to a TCP/UDP Component are: [CONNECT, FIRST_BYTE, LAST_BYTE, LAST_BYTE_INFLIGHT].
+
+              The default value is used for a tcpudp Component; there is no default for a TCP/UDP Component.
+            default: HEADER
+  ListAgentKeyResponse:
+    title: ListAgentKeyResponse
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/AgentKey'
+  ListIntegrationResponse:
+    title: ListIntegrationResponse
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Integration'
+  Metadata:
+    title: Metadata
+    type: object
+    properties:
+      createTime:
+        description: >-
+          A timestamp that represents the server time when the resource was created.
+
+
+          Create time is not guaranteed to be set in "happens-before" order
+
+          across separate operations.
+
+
+          In JSON format, `create_time` type is encoded as a string in the
+
+          [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt).
+
+
+          For example: 2018-04-01T01:30:15.01Z
+
+
+          Create Time is assigned by the server and cannot be changed.
+        example: 2019-07-29T09:12:33.001Z
+        type: string
+        format: date-time
+      description:
+        description: >-
+          `description` is a free-form text property. You can use it to provide information that helps
+
+          to identify the resource.
+
+
+          Descriptions:
+
+
+          - are optional (defaults to an empty string if no value is provided),
+
+          - do not have to be unique,
+
+          - cannot be assigned by the server.
+        example: This is a sample description string. It provides information about the resource.
+        type: string
+        maxLength: 500
+      environmentRef:
+        $ref: '#/definitions/Reference'
+      name:
+        description: >-
+          Resource name is a user-friendly identifier for a resource.
+
+
+          names:
+
+
+          - allow all alpha-numeric characters;
+
+          - allow special characters: <space> and these characters inside the quotes "@#$%-_";
+
+          - allow length of 1 to 1024 characters;
+        example: resource-name
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: ^[A-Za-z0-9\s@#$%-_]+$
+      tags:
+        description: >-
+          You can assign `tags` to a resource as a way to help map, scope,
+
+          and organize resources.
+
+
+          The system uses tag selectors to specify selection criteria that
+
+          match resources that have particular tags.
+        example:
+        - production_public
+        - dev
+        - new_app
+        - us-west-1
+        - emea
+        type: array
+        items:
+          type: string
+          maxLength: 2048
+        maxLength: 2048
+      uid:
+        description: >-
+          Unique Identifier (UID)
+
+
+          UID is a unique identifier in time and space for a resource.
+
+          When you create a resource, the server assigns a UID to the resource. User
+
+          cannot set this.
+
+
+          Refer to [IETF RFC 4122](https://tools.ietf.org/html/rfc4122) for more information.
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type: string
+        format: uuid
+      updateTime:
+        description: >-
+          A timestamp that represents the server time when the resource was last modified.
+
+
+          Resources that have never been updated do not have an `update_time` stamp.
+
+
+          The default value for resources that have never been updated is the local
+
+          language-specific equivalent of "null".
+
+
+          In JSON format, `update_time` type is encoded as a string as described in
+
+          [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt).
+        example: 2019-07-29T10:12:33.001Z
+        type: string
+        format: date-time
+    required:
+    - name
+  NamedLinks:
+    title: NamedLinks
+    type: object
+    properties:
+      rel:
+        description: >-
+          `rel` contains the complete path fragment of a URI and can be used
+
+          to construct a query to the object.
+        example: /api/adc/v1/environments/prod
+        type: string
+        maxLength: 2048
+      displayName:
+        description: A user friendly resource name.
+        example: Production Environment
+        type: string
+        maxLength: 2048
+      name:
+        description: The name of the linked resource.
+        example: production
+        type: string
+        maxLength: 100
+  Placement:
+    title: Placement
+    type: object
+    properties:
+      instanceGroupRefs:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroupRef'
+    required:
+    - instanceGroupRefs
+  Policy:
+    title: Policy
+    description: Contains the policy to upload.
+    type: object
+    properties:
+      desiredState:
+        type: object
+        allOf:
+        - $ref: '#/definitions/PolicyDesiredState'
+        - description: The defired state of the policy
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - desiredState
+    - metadata
+  PolicyCurrentStatus:
+    title: PolicyCurrentStatus
+    description: Shows the current status of the policy.
+    type: object
+    properties:
+      content:
+        description: Contains the policy to upload.
+        example:
+          policy:
+            applicationLanguage: utf-8
+            bot-defense:
+              settings:
+                isEnabled: false
+            cookies:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            enforcementMode: blocking
+            headers:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            - decodeValueAsBase64: required
+              name: '*-bin'
+              type: wildcard
+            - decodeValueAsBase64: disabled
+              name: Referer
+              type: explicit
+            - decodeValueAsBase64: disabled
+              name: Authorization
+              type: explicit
+            - decodeValueAsBase64: disabled
+              name: Transfer-Encoding
+              type: explicit
+            name: mynappolicy
+            parameters:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            signatures:
+            - enabled: false
+              signatureId: 123458888
+            - enabled: false
+              signatureId: 200000098
+            - enabled: false
+              signatureId: 200001475
+            - enabled: false
+              signatureId: 200002595
+            template:
+              name: POLICY_TEMPLATE_NGINX_BASE
+        type: object
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - state
+  PolicyDesiredState:
+    title: PolicyDesiredState
+    description: The defired state of the policy
+    type: object
+    properties:
+      content:
+        description: Contains the policy to upload.
+        example:
+          policy:
+            applicationLanguage: utf-8
+            bot-defense:
+              settings:
+                isEnabled: false
+            cookies:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            enforcementMode: blocking
+            headers:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            - decodeValueAsBase64: required
+              name: '*-bin'
+              type: wildcard
+            - decodeValueAsBase64: disabled
+              name: Referer
+              type: explicit
+            - decodeValueAsBase64: disabled
+              name: Authorization
+              type: explicit
+            - decodeValueAsBase64: disabled
+              name: Transfer-Encoding
+              type: explicit
+            name: mynappolicy
+            parameters:
+            - decodeValueAsBase64: disabled
+              name: '*'
+              type: wildcard
+            signatures:
+            - enabled: false
+              signatureId: 123458888
+            - enabled: false
+              signatureId: 200000098
+            - enabled: false
+              signatureId: 200001475
+            - enabled: false
+              signatureId: 200002595
+            template:
+              name: POLICY_TEMPLATE_NGINX_BASE
+        type: object
+    required:
+    - content
+  PolicyList:
+    title: PolicyList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/PolicyStatus'
+    required:
+    - items
+  PolicyStatus:
+    title: PolicyStatus
+    type: object
+    properties:
+      currentStatus:
+        type: object
+        allOf:
+        - $ref: '#/definitions/PolicyCurrentStatus'
+        - description: Shows the current status of the policy.
+      desiredState:
+        type: object
+        allOf:
+        - $ref: '#/definitions/PolicyDesiredState'
+        - description: The defired state of the policy
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - currentStatus
+    - desiredState
+    - metadata
+  RandomLBMethod:
+    title: RandomLBMethod
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+      properties:
+        twoServerLBMethod:
+          type: object
+          allOf:
+          - $ref: '#/definitions/TwoServerLBMethod'
+          - description: >-
+              Values applicable to a TcpUdp Component are: [LEAST_CONNECTIONS, LEAST_TIME_HEADER, LEAST_TIME_LAST_BYTE];
+
+              Values applicable to a TCP/UDP Component are: [LEAST_CONNECTIONS, LEAST_TIME_CONNECT, LEAST_TIME_FIRST_BYTE, LEAST_TIME_LAST_BYTE].
+  Reference:
+    title: Reference
+    type: object
+    properties:
+      name:
+        example: main web
+        type: string
+        maxLength: 100
+      ref:
+        example: 570406ec-946a-4f3f-a609-da54db069d74
+        type: string
+        maxLength: 2048
+    required:
+    - ref
+  ResourceRef:
+    title: ResourceRef
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/NamedLinks'
+      ref:
+        description: A reference to another NGINX Controller resource.
+        example: /environments/prod
+        type: string
+        maxLength: 2048
+    required:
+    - ref
+  RoundRobinLB:
+    title: RoundRobinLB
+    allOf:
+    - $ref: '#/definitions/LoadBalancingMethod'
+    - type: object
+  SelfLinks:
+    title: SelfLinks
+    description: >-
+      The SelfLinks object contains a link from the resource to itself.
+
+      This object is used only in responses.
+    type: object
+    properties:
+      rel:
+        description: >-
+          `rel` contains the complete path fragment of a URI and can be used
+
+          to construct a query to the object.
+        example: /api/adc/v1/environments/prod
+        type: string
+        maxLength: 2048
+  SelfState:
+    title: SelfState
+    type: object
+    properties:
+      status:
+        type: object
+        allOf:
+        - $ref: '#/definitions/Status'
+        - description: >-
+            CONFIGURING - The configuration of the resource is in process.
+
+            CONFIGURED  - The configuration operation is complete.
+
+            DELETING    - The resource is being deleted.
+
+            ERROR       - An error occurred while configuring the resource
+    required:
+    - status
+  ServiceConfigState:
+    title: ServiceConfigState
+    type: string
+    enum:
+    - ENABLED
+    - DISABLED
+  ServiceVersion:
+    title: ServiceVersion
+    type: object
+    properties:
+      name:
+        description: Service name.
+        example: myservice
+        type: string
+        maxLength: 100
+      version:
+        description: Semver version of the service.
+        example: v0.0.1-githashabc123
+        type: string
+        maxLength: 2048
+    required:
+    - name
+    - version
+  Site:
+    title: Site
+    description: A collection of instance and instance groups for workload affinity and RBAC
+    type: object
+    properties:
+      instanceGroupRefs:
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - metadata
+  SiteList:
+    title: SiteList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Site'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  State:
+    title: State
+    description: >-
+      A representation of the resource's current configuration state
+
+      that comprises the status of the resource itself (`self`) and any child
+
+      resources (`children`).
+    type: object
+    properties:
+      children:
+        type: object
+        allOf:
+        - $ref: '#/definitions/ChildrenState'
+        - description: Roll up of child resource states.
+      conditions:
+        type: array
+        items:
+          $ref: '#/definitions/Condition'
+      jobs:
+        type: array
+        items:
+          $ref: '#/definitions/Job'
+      self:
+        $ref: '#/definitions/SelfState'
+    required:
+    - self
+  Strategy:
+    title: Strategy
+    description: Contains the strategy to upload.
+    type: object
+    properties:
+      desiredState:
+        type: object
+        allOf:
+        - $ref: '#/definitions/StrategyDesiredState'
+        - description: The defired state of the strategy
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - desiredState
+    - metadata
+  StrategyCurrentStatus:
+    title: StrategyCurrentStatus
+    description: Shows the current status of the strategy.
+    type: object
+    properties:
+      content:
+        type: object
+        allOf:
+        - $ref: '#/definitions/StrategyData'
+        - description: Strategy Data.
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - content
+    - state
+  StrategyData:
+    title: StrategyData
+    description: Strategy Data.
+    type: object
+    properties:
+      securityPolicyRef:
+        description: Reference to the Nginx Application Protection policy used in this strategy.
+        example: /security/policies/mynappolicy
+        type: string
+        maxLength: 2048
+    required:
+    - securityPolicyRef
+  StrategyDesiredState:
+    title: StrategyDesiredState
+    description: The defired state of the strategy
+    type: object
+    properties:
+      content:
+        type: object
+        allOf:
+        - $ref: '#/definitions/StrategyData'
+        - description: Strategy Data.
+    required:
+    - content
+  StrategyList:
+    title: StrategyList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/StrategyStatus'
+    required:
+    - items
+  StrategyStatus:
+    title: StrategyStatus
+    type: object
+    properties:
+      currentStatus:
+        type: object
+        allOf:
+        - $ref: '#/definitions/StrategyCurrentStatus'
+        - description: Shows the current status of the strategy.
+      desiredState:
+        type: object
+        allOf:
+        - $ref: '#/definitions/StrategyDesiredState'
+        - description: The defired state of the strategy
+      metadata:
+        $ref: '#/definitions/Metadata'
+    required:
+    - currentStatus
+    - desiredState
+    - metadata
+  TLS:
+    title: TLS
+    description: TLS settings applicable to URIs.
+    type: object
+    properties:
+      certRef:
+        $ref: '#/definitions/Reference'
+      cipher:
+        example: ALL:!aNULL:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+        type: string
+        maxLength: 2048
+      preferServerCipher:
+        type: object
+        allOf:
+        - $ref: '#/definitions/ServiceConfigState'
+        - default: DISABLED
+      protocols:
+        type: array
+        items:
+          type: string
+          maxLength: 2048
+          pattern: TLSv1|TLSv1\.[1-3]|SSLv2|SSLv3
+        maxLength: 2048
+        pattern: TLSv1|TLSv1\.[1-3]|SSLv2|SSLv3
+      sessionCache:
+        type: object
+        allOf:
+        - $ref: '#/definitions/SessionCache'
+        - default: OFF
+    required:
+    - certRef
+  TcpUdpComponent:
+    title: TcpUdpComponent
+    description: >-
+      A TcpUdp Component represents the processing -- stream proxying.
+
+      -- of traffic associated with a logical part (for example, microservice) of an application/API. It also defines the subsequent
+
+      load balancing of traffic to workloads implementing that part of the application/API.
+
+
+      TcpUdp components are used to configure NGINX functionality associated with TCP/UDP protocols and inherit tcpudp and common
+
+      settings from linked Gateways.
+    type: object
+    properties:
+      backend:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TcpUdpComponentBackend'
+        - description: Backend settings in a TcpUdp Component.
+      customExtensions:
+        type: object
+      ingress:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TcpUdpComponentIngress'
+        - description: Ingress settings in a TcpUdp Component.
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - metadata
+  TcpUdpComponentBackend:
+    title: TcpUdpComponentBackend
+    description: Backend settings in a TcpUdp Component.
+    type: object
+    properties:
+      workloadGroups:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/TcpUdpComponentWorkloadGroup'
+  TcpUdpComponentIngress:
+    title: TcpUdpComponentIngress
+    description: Ingress settings in a TcpUdp Component.
+    type: object
+    properties:
+      gatewayRefs:
+        description: Reference(s) to existing Gateway resource(s).
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      tls:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TLS'
+        - description: TLS settings applicable to URIs.
+      uris:
+        description: >-
+          Defines the URI in TcpUdp Components.
+
+
+          For URIs in TcpUdp Components, `uris` must conform to the format `schema://address[:port]`
+            Examples:
+            - `tcp://192.0.2.247`
+            - `udp://192.0.2.3`
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/TcpUdpComponentIngressURI'
+    required:
+    - uris
+  TcpUdpComponentIngressURI:
+    title: TcpUdpComponentIngressURI
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      tls:
+        type: object
+        allOf:
+        - $ref: '#/definitions/TLS'
+        - description: TLS settings applicable to URIs.
+  TcpUdpComponentList:
+    title: TcpUdpComponentList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/TcpUdpComponent'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  TcpUdpComponentSettings:
+    title: TcpUdpComponentSettings
+    description: The current snapshot of the TCP/UDP component settings that are reflected in the configuration on NGINX instances referenced by this TCP/UDP Component.
+    type: object
+    properties:
+      templateRef:
+        type: string
+        maxLength: 2048
+  TcpUdpComponentWorkloadUri:
+    title: TcpUdpComponentWorkloadUri
+    type: object
+    properties:
+      isBackup:
+        type: boolean
+        default: false
+      isDown:
+        type: boolean
+        default: false
+      isDrain:
+        type: boolean
+        default: false
+      maxConns:
+        type: integer
+        default: 0
+        minimum: 0
+        format: int32
+      maxFails:
+        type: integer
+        default: 1
+        minimum: 0
+        format: int32
+      srvService:
+        type: string
+        maxLength: 2048
+      weight:
+        type: integer
+        default: 1
+        minimum: 1
+        format: int32
+  TemplateType:
+    title: TemplateType
+    description: Type of the template.
+    type: string
+    enum:
+    - gateways
+    - web-components
+    - web-components-locations
+    - tcp-udp-components
+  WebComponent:
+    title: WebComponent
+    description: >-
+      A component represents the processing –- reverse proxying, rate limiting, security policy enforcement, header rewrites, etc.
+
+      –- of traffic associated with a logical part (for example, microservice) of an application/API. It also defines the subsequent
+
+      load balancing of traffic to workloads implementing that part of the application/API.
+
+
+      Web components are used to configure NGINX functionality associated with HTTP/HTTPS protocols and inherit web and common
+
+      settings from linked Gateways.
+    type: object
+    properties:
+      backend:
+        type: object
+        allOf:
+        - $ref: '#/definitions/WebComponentBackend'
+        - description: Backend settings in a Web Component.
+      customExtensions:
+        type: object
+      ingress:
+        type: object
+        allOf:
+        - $ref: '#/definitions/WebComponentIngress'
+        - description: Ingress settings in a Web Component.
+      metadata:
+        $ref: '#/definitions/Metadata'
+      state:
+        type: object
+        allOf:
+        - $ref: '#/definitions/State'
+        - description: >-
+            A representation of the resource's current configuration state
+
+            that comprises the status of the resource itself (`self`) and any child
+
+            resources (`children`).
+    required:
+    - metadata
+  WebComponentBackend:
+    title: WebComponentBackend
+    description: Backend settings in a Web Component.
+    type: object
+    properties:
+      workloadGroups:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/WebComponentWorkloadGroup'
+  WebComponentIngress:
+    title: WebComponentIngress
+    description: Ingress settings in a Web Component.
+    type: object
+    properties:
+      gatewayRefs:
+        description: Reference(s) to existing Gateway resource(s).
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      uris:
+        description: >-
+          Defines the URI in Web Components.
+
+
+          For URIs in Web Components, `uris` can be a relative path that follows the format `/path[/...]`;
+
+          additionally each URI can have a match method specified.
+            Examples:
+            - `/images`
+            - `/*.jpg`
+            - `/locations/us/wa*`
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/WebComponentIngressURI'
+    required:
+    - uris
+  WebComponentIngressURI:
+    title: WebComponentIngressURI
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      matchMethod:
+        type: object
+        allOf:
+        - $ref: '#/definitions/WebComponentURIMatchMethod'
+        - description: Specifies how to determine a match between an incoming Web URI and configured Web URI.
+          default: PREFIX
+  WebComponentList:
+    title: WebComponentList
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/WebComponent'
+      itemsPerPage:
+        type: integer
+        minimum: 1
+        format: int32
+      startIndex:
+        type: integer
+        minimum: 1
+        format: int32
+      totalResults:
+        type: integer
+        minimum: 0
+        format: int32
+  WebComponentLocationsSettings:
+    title: WebComponentLocationsSettings
+    description: The current snapshot of the web component locations settings that are reflected in the configuration on NGINX instances referenced by this Web Component Locations.
+    type: object
+    properties:
+      templateRef:
+        type: string
+        maxLength: 2048
+  WebComponentSettings:
+    title: WebComponentSettings
+    description: The current snapshot of the web component settings that are reflected in the configuration on NGINX instances referenced by this Web Component.
+    type: object
+    properties:
+      templateRef:
+        type: string
+        maxLength: 2048
+  WebComponentURIMatchMethod:
+    title: WebComponentURIMatchMethod
+    description: Specifies how to determine a match between an incoming Web URI and configured Web URI.
+    type: string
+    enum:
+    - PREFIX
+    - REGEX
+    - REGEX_CASE_SENSITIVE
+    - SUFFIX
+    - EXACT
+  WebComponentWorkloadUri:
+    title: WebComponentWorkloadUri
+    type: object
+    properties:
+      isBackup:
+        type: boolean
+        default: false
+      isDown:
+        type: boolean
+        default: false
+      isDrain:
+        type: boolean
+        default: false
+      maxConns:
+        type: integer
+        default: 0
+        minimum: 0
+        format: int32
+      maxFails:
+        type: integer
+        default: 1
+        minimum: 0
+        format: int32
+      srvService:
+        type: string
+        maxLength: 2048
+      weight:
+        type: integer
+        default: 1
+        minimum: 1
+        format: int32
+  Credential:
+    title: Credential
+    discriminator: type
+    type: object
+    properties:
+      type:
+        type: string
+    required:
+    - type
+  filterOn:
+    title: filterOn
+    type: string
+    enum:
+    - name
+    - description
+    - uid
+  IntegrationState:
+    title: IntegrationState
+    discriminator: type
+    type: object
+    properties:
+      type:
+        type: string
+    required:
+    - type
+  LatencyParameter:
+    title: LatencyParameter
+    description: >-
+      Values applicable to a TcpUdp Component are: [HEADER, LAST_BYTE, LAST_BYTE_INFLIGHT];
+
+      Values applicable to a TCP/UDP Component are: [CONNECT, FIRST_BYTE, LAST_BYTE, LAST_BYTE_INFLIGHT].
+
+      The default value is used for a tcpudp Component; there is no default for a TCP/UDP Component.
+    type: string
+    enum:
+    - HEADER
+    - CONNECT
+    - FIRST_BYTE
+    - LAST_BYTE
+    - LAST_BYTE_INFLIGHT
+  LoadBalancingMethod:
+    title: LoadBalancingMethod
+    discriminator: type
+    type: object
+    properties:
+      type:
+        type: string
+    required:
+    - type
+  resource:
+    title: resource
+    type: string
+    enum:
+    - published-apis
+  SessionCache:
+    title: SessionCache
+    type: string
+    enum:
+    - OFF
+    - NONE
+    - BUILTIN
+    - SHARED
+  sortBy:
+    title: sortBy
+    type: string
+    enum:
+    - name
+    - uid
+    - environmentRef.uid
+    - description
+    - createTime
+    - updateTime
+  sortBy1:
+    title: sortBy1
+    type: string
+    enum:
+    - name
+    - uid
+    - createTime
+    - updateTime
+  sortOrder:
+    title: sortOrder
+    type: string
+    enum:
+    - ascending
+    - descending
+  Status:
+    title: Status
+    description: >-
+      CONFIGURING - The configuration of the resource is in process.
+
+      CONFIGURED  - The configuration operation is complete.
+
+      DELETING    - The resource is being deleted.
+
+      ERROR       - An error occurred while configuring the resource
+    type: string
+    enum:
+    - CONFIGURING
+    - CONFIGURED
+    - DELETING
+    - ERROR
+  TcpUdpComponentWorkloadGroup:
+    title: TcpUdpComponentWorkloadGroup
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      loadBalancingMethod: {}
+      siteRefs:
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      uris:
+        description: >-
+          The URI for a server hosting a part of a TcpUdp application.
+
+
+          It must conform to the format `schema://address[:port]`
+
+          where schema is chosen from tcp or udp, address is IP or hostname,
+
+          schema and address must be provided.
+
+
+          For example:
+
+
+          - `tcp://192.0.2.247`
+
+          - `udp://192.0.2.247:8443`
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/TcpUdpComponentWorkloadUri'
+  TwoServerLBMethod:
+    title: TwoServerLBMethod
+    description: >-
+      Values applicable to a TcpUdp Component are: [LEAST_CONNECTIONS, LEAST_TIME_HEADER, LEAST_TIME_LAST_BYTE];
+
+      Values applicable to a TCP/UDP Component are: [LEAST_CONNECTIONS, LEAST_TIME_CONNECT, LEAST_TIME_FIRST_BYTE, LEAST_TIME_LAST_BYTE].
+    type: string
+    enum:
+    - LEAST_CONNECTIONS
+    - LEAST_TIME_HEADER
+    - LEAST_TIME_CONNECT
+    - LEAST_TIME_FIRST_BYTE
+    - LEAST_TIME_LAST_BYTE
+  WebComponentWorkloadGroup:
+    title: WebComponentWorkloadGroup
+    type: object
+    properties:
+      customExtensions:
+        type: object
+      loadBalancingMethod: {}
+      siteRefs:
+        type: array
+        items:
+          $ref: '#/definitions/Reference'
+      uris:
+        description: >-
+          The URI for a server hosting a part of a Web application.
+
+
+          It must conform to the format `schema://address[:port]`
+
+          where schema is chosen from http or https, address is IP or hostname,
+
+          schema and address must be provided.
+
+
+          For example:
+
+
+          - `http://192.0.2.247`
+
+          - `https://192.0.2.247:8443`
+
+          - `https://www.f5workload.com`
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/WebComponentWorkloadUri'
+tags:
+- name: Apps
+  description: ''
+- name: Environments
+  description: ''
+- name: Gateways
+  description: ''
+- name: TcpUdp Components
+  description: ''
+- name: Components
+  description: ''
+- name: Web Components
+  description: ''
+- name: AgentKeys
+  description: ''
+- name: Integrations
+  description: ''
+- name: Policies
+  description: ''
+- name: Strategies
+  description: ''
+- name: Services
+  description: ''
+- name: ErrorSets
+  description: ''
+- name: Sites
+  description: ''
+- name: Templates
+  description: ''
+- name: Template
+  description: ''
+- name: Template schema
+  description: ''
