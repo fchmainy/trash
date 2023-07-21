@@ -1,96 +1,11 @@
 {
     "components": {
-        "examples": {
-            "AgentKey": {
-                "value": {
-                    "metadata": {
-                        "displayName": "Key 1",
-                        "name": "ak000001"
-                    }
-                }
-            },
-            "AgentKeyRequest": {
-                "value": {
-                    "metadata": {
-                        "displayName": "Super Secret Key 1",
-                        "name": "superkey1"
-                    }
-                }
-            },
-            "AgentKeyUpdateRequest": {
-                "value": {
-                    "metadata": {
-                        "displayName": "Super Secret Key Updated Name",
-                        "name": "superkey1"
-                    }
-                }
-            },
-            "ListAgentKeyResponse": {
-                "value": {
-                    "items": [
-                        {
-                            "currentStatus": {
-                                "agentKey": "key123",
-                                "revokedTime": "2020-07-09T16:42:07.97301Z"
-                            },
-                            "metadata": {
-                                "createTime": "2020-07-08T16:42:07.97301Z",
-                                "displayName": "Super Secret Key 1",
-                                "kind": "agentKey",
-                                "links": {
-                                    "rel": "/api/v1/platform/agent-keys/superkey1"
-                                },
-                                "name": "superkey1",
-                                "ref": "/platform/agent-keys/superkey1",
-                                "uid": "ec8d8dac-10b6-4195-943b-1a5d65dd131c",
-                                "updateTime": "2020-07-09T16:42:07.97301Z"
-                            }
-                        }
-                    ]
-                }
-            },
-            "RevokeAgentKeyResponse": {
-                "value": {
-                    "items": [
-                        {
-                            "currentStatus": {
-                                "agentKey": "key123",
-                                "revokedTime": "2020-07-09T16:42:07.97301Z"
-                            },
-                            "metadata": {
-                                "createTime": "2020-07-08T16:42:07.97301Z",
-                                "displayName": "Super Secret Key 1",
-                                "kind": "agentKey",
-                                "links": {
-                                    "rel": "/api/v1/platform/agent-keys/superkey1"
-                                },
-                                "name": "superkey1",
-                                "ref": "/platform/agent-keys/superkey1",
-                                "uid": "ec8d8dac-10b6-4195-943b-1a5d65dd131c",
-                                "updateTime": "2020-07-09T16:42:07.97301Z"
-                            }
-                        }
-                    ]
-                }
-            }
-        },
         "parameters": {
-            "AgentKeyName": {
-                "description": "The name of the Agent API Key.",
-                "in": "path",
-                "name": "agentKeyName",
-                "required": true,
-                "schema": {
-                    "maxLength": 2048,
-                    "type": "string"
-                },
-                "style": "simple"
-            },
             "Count": {
+                "description": "default: 20\n",
                 "in": "query",
                 "name": "count",
                 "schema": {
-                    "default": 20,
                     "maximum": 100,
                     "minimum": 1,
                     "type": "integer"
@@ -120,21 +35,26 @@
                 },
                 "style": "form"
             },
-            "IntegrationName": {
-                "description": "The name of the Integration resource.",
-                "in": "path",
-                "name": "integrationName",
-                "required": true,
+            "FilterOnGateway": {
+                "explode": true,
+                "in": "query",
+                "name": "filterOn",
                 "schema": {
-                    "maxLength": 2048,
-                    "type": "string"
-                }
+                    "items": {
+                        "enum": [
+                            "gateway"
+                        ],
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "style": "form"
             },
             "SortBy": {
+                "description": "default: updateTime\n",
                 "in": "query",
                 "name": "sortBy",
                 "schema": {
-                    "default": "updateTime",
                     "enum": [
                         "name",
                         "uid",
@@ -147,10 +67,10 @@
                 }
             },
             "SortOrder": {
+                "description": "default: descending\n",
                 "in": "query",
                 "name": "sortOrder",
                 "schema": {
-                    "default": "descending",
                     "enum": [
                         "ascending",
                         "descending"
@@ -168,103 +88,8 @@
             }
         },
         "schemas": {
-            "AWSAccessKeyCredential": {
-                "properties": {
-                    "accessKeyID": {
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "secretAccessKey": {
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "type": {
-                        "enum": [
-                            "AWS_ACCESS_KEY_CREDENTIAL"
-                        ],
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "type",
-                    "accessKeyID",
-                    "secretAccessKey"
-                ],
-                "type": "object"
-            },
-            "AWSIntegration": {
-                "properties": {
-                    "credential": {
-                        "discriminator": {
-                            "propertyName": "type"
-                        },
-                        "oneOf": [
-                            {
-                                "$ref": "#/components/schemas/AWSAccessKeyCredential"
-                            }
-                        ]
-                    },
-                    "endpointUri": {
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "type": {
-                        "enum": [
-                            "AWS_INTEGRATION"
-                        ],
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "type",
-                    "credential"
-                ],
-                "type": "object"
-            },
-            "AgentKey": {
-                "description": "An API key for Agent.",
-                "properties": {
-                    "currentStatus": {
-                        "$ref": "#/components/schemas/AgentKeyCurrentStatus"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata"
-                ],
-                "type": "object"
-            },
-            "AgentKeyCurrentStatus": {
-                "description": "Contains the current status of the AgentKeyCurrentStatus",
-                "properties": {
-                    "agentKey": {
-                        "description": "The API key used by data plane agents.",
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "revokedTime": {
-                        "description": "If present, indicates the time that the key was revoked.",
-                        "format": "date-time",
-                        "maxLength": 2048,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "agentKey"
-                ],
-                "type": "object"
-            },
-            "AgentKeyRequest": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/AgentKey"
-                    }
-                ],
-                "description": "Describes the Agent API Key to update."
-            },
             "App": {
+                "additionalProperties": false,
                 "description": "An App is a collection of Components.",
                 "properties": {
                     "metadata": {
@@ -341,6 +166,7 @@
                 "type": "object"
             },
             "ChildrenState": {
+                "additionalProperties": false,
                 "description": "Roll up of child resource states.\n",
                 "properties": {
                     "configured": {
@@ -379,6 +205,7 @@
                 "type": "object"
             },
             "Condition": {
+                "additionalProperties": false,
                 "properties": {
                     "message": {
                         "description": "A human-readable message that provides additional information about the configuration operation.",
@@ -397,91 +224,24 @@
                 ],
                 "type": "object"
             },
-            "Environment": {
-                "description": "An Environment is a logical container that you can use to organize your Apps. A few commonly-used examples of Environments are \"dev\" and \"production\".",
-                "properties": {
-                    "appRefs": {
-                        "description": "Reference to all App resources in this Environment. . This is a read only field populated in server responses.",
-                        "items": {
-                            "$ref": "#/components/schemas/Reference"
-                        },
-                        "type": "array"
-                    },
-                    "gatewayRefs": {
-                        "description": "Reference to all Gateway resources in this Environment. This is a read only field populated in server the response.",
-                        "items": {
-                            "$ref": "#/components/schemas/Reference"
-                        },
-                        "type": "array"
-                    },
-                    "gatewaySettings": {
-                        "$ref": "#/components/schemas/GatewaySettings"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    },
-                    "state": {
-                        "$ref": "#/components/schemas/State"
-                    },
-                    "tcpUdpComponentSettings": {
-                        "$ref": "#/components/schemas/TcpUdpComponentSettings"
-                    },
-                    "webComponentLocationsSettings": {
-                        "$ref": "#/components/schemas/WebComponentLocationsSettings"
-                    },
-                    "webComponentSettings": {
-                        "$ref": "#/components/schemas/WebComponentSettings"
-                    }
-                },
-                "required": [
-                    "metadata"
-                ],
-                "type": "object"
-            },
             "EnvironmentID": {
                 "maxLength": 2048,
                 "type": "string"
             },
-            "EnvironmentList": {
+            "EnvironmentUseCase": {
+                "additionalProperties": false,
                 "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/Environment"
-                        },
-                        "type": "array"
-                    },
-                    "itemsPerPage": {
-                        "$ref": "#/components/schemas/ItemsPerPage"
-                    },
-                    "startIndex": {
-                        "$ref": "#/components/schemas/StartIndex"
-                    },
-                    "totalResults": {
-                        "$ref": "#/components/schemas/TotalResults"
-                    }
-                },
-                "type": "object"
-            },
-            "ErrorCode": {
-                "properties": {
-                    "code": {
-                        "example": 404,
-                        "maximum": 599,
-                        "minimum": 400,
-                        "type": "integer"
-                    },
-                    "message": {
-                        "example": "{\"status\":404,\"message\":\"Resource not found\"}",
-                        "type": "string"
+                    "templateGroupRef": {
+                        "$ref": "#/components/schemas/Reference"
                     }
                 },
                 "required": [
-                    "code",
-                    "message"
+                    "templateGroupRef"
                 ],
                 "type": "object"
             },
             "ErrorDetail": {
+                "additionalProperties": false,
                 "properties": {
                     "description": {
                         "description": "A detailed error message returned by the server.\n\nThese messages contain the following information, where applicable:\n\n- What happened.\n- Why it happened.\n- What the consequences are (if any).\n- Recommended action to take to resolve the issue.\n",
@@ -496,6 +256,7 @@
                 "type": "object"
             },
             "ErrorModel": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "description": "A numeric error code that can be used to identify errors for support purposes.\n",
@@ -521,59 +282,8 @@
                 ],
                 "type": "object"
             },
-            "ErrorSet": {
-                "description": "Defines the set of error messages to be returned for HTTP errors.",
-                "properties": {
-                    "currentStatus": {
-                        "$ref": "#/components/schemas/ErrorSetCurrentStatus"
-                    },
-                    "desiredState": {
-                        "$ref": "#/components/schemas/ErrorSetDesiredState"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata",
-                    "desiredState"
-                ],
-                "type": "object"
-            },
-            "ErrorSetCurrentStatus": {
-                "properties": {
-                    "errorCodes": {
-                        "items": {
-                            "$ref": "#/components/schemas/ErrorCode"
-                        },
-                        "type": "array"
-                    }
-                },
-                "type": "object"
-            },
-            "ErrorSetDesiredState": {
-                "properties": {
-                    "errorCodes": {
-                        "items": {
-                            "$ref": "#/components/schemas/ErrorCode"
-                        },
-                        "type": "array"
-                    }
-                },
-                "type": "object"
-            },
-            "ErrorSetList": {
-                "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/ErrorSet"
-                        },
-                        "type": "array"
-                    }
-                },
-                "type": "object"
-            },
             "Gateway": {
+                "additionalProperties": false,
                 "properties": {
                     "customExtensions": {
                         "type": "object"
@@ -598,29 +308,40 @@
                 "type": "string"
             },
             "GatewayIngressUri": {
+                "additionalProperties": false,
                 "properties": {
                     "customExtensions": {
+                        "description": "Generates dynamic content structure based on what usecases are enabled on the environment level.\n",
+                        "example": {
+                            "headers": {
+                                "ignoreInvalidHeaders": true,
+                                "underscoresInHeaders": true
+                            }
+                        },
                         "type": "object"
                     },
                     "matchMethod": {
                         "$ref": "#/components/schemas/GatewayURIMatchMethod"
                     },
-                    "serverPoolPort": {
-                        "description": "The port number used when the IngressUri is deployed to an Instance that's a member of a BIG-IP server pool.",
-                        "type": "integer"
-                    },
                     "tls": {
                         "$ref": "#/components/schemas/TLS"
+                    },
+                    "uri": {
+                        "description": "Defines the URI in Gateways.\n\nFor URIs in Gateways, `uris` must be a complete URI that follows the format `\u003chttp|https\u003e://host[:port]`;\nadditionally each URI can have a match method specified and an HTTPS URI can include TLS information.\nExamples:\n  - `http://www.f5.com`\n  - `https://www.f5.com`\n  - `http://www.f5.com:8080`\n  - `http://*.info.f5.com`\n",
+                        "example": "http://www.f5.com",
+                        "type": "string"
                     }
                 },
+                "required": [
+                    "uri"
+                ],
                 "type": "object"
             },
             "GatewayIngressUris": {
-                "additionalProperties": {
+                "items": {
                     "$ref": "#/components/schemas/GatewayIngressUri"
                 },
-                "description": "Defines the URI in Gateways.\n\nFor URIs in Gateways, `uris` must be a complete URI that follows the format `\u003chttp|https\u003e://host[:port]`;\nadditionally each URI can have a match method specified and an HTTPS URI can include TLS information.\n  Examples:\n  - `http://www.f5.com`\n  - `https://www.f5.com`\n  - `http://www.f5.com:8080`\n  - `http://*.info.f5.com`\n",
-                "type": "object"
+                "type": "array"
             },
             "GatewayList": {
                 "properties": {
@@ -670,11 +391,11 @@
                 "type": "string"
             },
             "GatewaySettings": {
+                "additionalProperties": false,
                 "description": "The current snapshot of the gateway settings that are reflected in the configuration on NGINX instances referenced by this Gateway.\n",
                 "properties": {
                     "templateRef": {
-                        "maxLength": 2048,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Reference"
                     }
                 },
                 "type": "object"
@@ -688,23 +409,11 @@
                     "SUFFIX",
                     "EXACT"
                 ],
+                "example": "SUFFIX",
                 "type": "string"
             },
-            "GetAgentKeyResponse": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/AgentKey"
-                    }
-                ]
-            },
-            "GetIntegrationResponse": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/Integration"
-                    }
-                ]
-            },
             "HashLBMethod": {
+                "additionalProperties": false,
                 "properties": {
                     "consistentHash": {
                         "$ref": "#/components/schemas/ServiceConfigState"
@@ -727,7 +436,8 @@
                 "type": "object"
             },
             "IPHashLB": {
-                "description": "IP Hash Load Balancing only applicable to TcpUdp Components.",
+                "additionalProperties": false,
+                "description": "IP Hash Load Balancing only applicable to Web Components.",
                 "properties": {
                     "type": {
                         "enum": [
@@ -742,6 +452,7 @@
                 "type": "object"
             },
             "Ingress": {
+                "additionalProperties": false,
                 "properties": {
                     "placement": {
                         "$ref": "#/components/schemas/Placement"
@@ -756,90 +467,39 @@
                 "type": "object"
             },
             "InstanceGroupRef": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "listenIps": {
-                                "description": "The list of Listen IP addresses.\n",
-                                "items": {
-                                    "example": "1.1.1.1, [2001::1]",
-                                    "maxLength": 2048,
-                                    "pattern": "^(?:(?:(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)(?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$)|(?:\\[\\s*(?:(?:(?:[0-9a-fA-F]{1,4}:){7}(?:[0-9a-fA-F]{1,4}|:))|(?:(?:[0-9a-fA-F]{1,4}:){6}(?::[0-9a-fA-F]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){5}(?:(?:(?::[0-9a-fA-F]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){4}(?:(?:(?::[0-9a-fA-F]{1,4}){1,3})|(?:(?::[0-9a-fA-F]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){3}(?:(?:(?::[0-9a-fA-F]{1,4}){1,4})|(?:(?::[0-9a-fA-F]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){2}(?:(?:(?::[0-9a-fA-F]{1,4}){1,5})|(?:(?::[0-9a-fA-F]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){1}(?:(?:(?::[0-9a-fA-F]{1,4}){1,6})|(?:(?::[0-9a-fA-F]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9a-fA-F]{1,4}){1,7})|(?:(?::[0-9a-fA-F]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?](?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?\\s*$))",
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/Reference"
-                    }
-                ]
-            },
-            "Integration": {
-                "example": {
-                    "currentStatus": {
-                        "credential": {
-                            "accessKeyID": "AKIAJ3N2PZUMZE3Y67ZA",
-                            "secretAccessKey": "*********",
-                            "type": "AWS_ACCESS_KEY_CREDENTIAL"
-                        },
-                        "type": "AWS_INTEGRATION"
-                    },
-                    "desiredState": {
-                        "credential": {
-                            "accessKeyID": "AKIAJ3N2PZUMZE3Y67ZA",
-                            "secretAccessKey": "*********",
-                            "type": "AWS_ACCESS_KEY_CREDENTIAL"
-                        },
-                        "type": "AWS_INTEGRATION"
-                    },
-                    "metadata": {
-                        "createTime": "2019-09-18T16:42:15.1183523Z",
-                        "description": "AWS integration for us-west-1",
-                        "displayName": "UsWest1-Integration",
-                        "endpointUri": "https://ec2.us-west-1.amazonaws.com",
-                        "name": "my-aws-integration",
-                        "tags": [
-                            "us-west-1"
-                        ],
-                        "uid": "619887de-a748-4931-853d-c6b706f95ddf",
-                        "updateTime": "2019-09-18T16:42:15.1183523Z"
-                    }
-                },
+                "additionalProperties": false,
                 "properties": {
-                    "currentStatus": {
-                        "$ref": "#/components/schemas/IntegrationState"
+                    "listenIps": {
+                        "items": {
+                            "example": "[2001::1]",
+                            "maxLength": 2048,
+                            "pattern": "^(?:(?:(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)(?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?$)|(?:\\[\\s*(?:(?:(?:[0-9a-fA-F]{1,4}:){7}(?:[0-9a-fA-F]{1,4}|:))|(?:(?:[0-9a-fA-F]{1,4}:){6}(?::[0-9a-fA-F]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){5}(?:(?:(?::[0-9a-fA-F]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9a-fA-F]{1,4}:){4}(?:(?:(?::[0-9a-fA-F]{1,4}){1,3})|(?:(?::[0-9a-fA-F]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){3}(?:(?:(?::[0-9a-fA-F]{1,4}){1,4})|(?:(?::[0-9a-fA-F]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){2}(?:(?:(?::[0-9a-fA-F]{1,4}){1,5})|(?:(?::[0-9a-fA-F]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9a-fA-F]{1,4}:){1}(?:(?:(?::[0-9a-fA-F]{1,4}){1,6})|(?:(?::[0-9a-fA-F]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9a-fA-F]{1,4}){1,7})|(?:(?::[0-9a-fA-F]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?](?::(?:[1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5]))?\\s*$))",
+                            "type": "string"
+                        },
+                        "type": "array"
                     },
-                    "desiredState": {
-                        "$ref": "#/components/schemas/IntegrationState"
+                    "name": {
+                        "example": "main web",
+                        "maxLength": 100,
+                        "type": "string"
                     },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
+                    "ref": {
+                        "example": "570406ec-946a-4f3f-a609-da54db069d74",
+                        "maxLength": 2048,
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "metadata",
-                    "desiredState"
+                    "ref"
                 ],
                 "type": "object"
-            },
-            "IntegrationState": {
-                "discriminator": {
-                    "propertyName": "type"
-                },
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/AWSIntegration"
-                    }
-                ]
             },
             "ItemsPerPage": {
                 "minimum": 1,
                 "type": "integer"
             },
             "Job": {
+                "additionalProperties": false,
                 "description": "A reference used to track pending request sent to DPM.\n",
                 "properties": {
                     "correlationID": {
@@ -861,6 +521,7 @@
                 "type": "object"
             },
             "LeastConnLB": {
+                "additionalProperties": false,
                 "properties": {
                     "type": {
                         "enum": [
@@ -874,88 +535,8 @@
                 ],
                 "type": "object"
             },
-            "LeastTimeLBMethod": {
-                "properties": {
-                    "latencyParameter": {
-                        "default": "HEADER",
-                        "description": "Values applicable to a TcpUdp Component are: [HEADER, LAST_BYTE, LAST_BYTE_INFLIGHT];\nValues applicable to a TCP/UDP Component are: [CONNECT, FIRST_BYTE, LAST_BYTE, LAST_BYTE_INFLIGHT].\nThe default value is used for a tcpudp Component; there is no default for a TCP/UDP Component.\n",
-                        "enum": [
-                            "HEADER",
-                            "CONNECT",
-                            "FIRST_BYTE",
-                            "LAST_BYTE",
-                            "LAST_BYTE_INFLIGHT"
-                        ],
-                        "type": "string"
-                    },
-                    "type": {
-                        "enum": [
-                            "LEAST_TIME"
-                        ],
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "type"
-                ],
-                "type": "object"
-            },
-            "ListAgentKeyResponse": {
-                "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/AgentKey"
-                        },
-                        "type": "array"
-                    }
-                },
-                "type": "object"
-            },
-            "ListIntegrationResponse": {
-                "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/Integration"
-                        },
-                        "type": "array"
-                    }
-                },
-                "type": "object"
-            },
-            "LoadBalancingMethod": {
-                "discriminator": {
-                    "mapping": {
-                        "HASH": "#/components/schemas/HashLBMethod",
-                        "IPHASH": "#/components/schemas/IPHashLB",
-                        "LEAST_CONNECTIONS": "#/components/schemas/LeastConnLB",
-                        "LEAST_TIME": "#/components/schemas/LeastTimeLBMethod",
-                        "RANDOM": "#/components/schemas/RandomLBMethod",
-                        "ROUND_ROBIN": "#/components/schemas/RoundRobinLB"
-                    },
-                    "propertyName": "type"
-                },
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/RoundRobinLB"
-                    },
-                    {
-                        "$ref": "#/components/schemas/IPHashLB"
-                    },
-                    {
-                        "$ref": "#/components/schemas/LeastConnLB"
-                    },
-                    {
-                        "$ref": "#/components/schemas/HashLBMethod"
-                    },
-                    {
-                        "$ref": "#/components/schemas/LeastTimeLBMethod"
-                    },
-                    {
-                        "$ref": "#/components/schemas/RandomLBMethod"
-                    }
-                ]
-            },
             "Metadata": {
+                "additionalProperties": false,
                 "properties": {
                     "createTime": {
                         "description": "A timestamp that represents the server time when the resource was created.\n\nCreate time is not guaranteed to be set in \"happens-before\" order\nacross separate operations.\n\nIn JSON format, `create_time` type is encoded as a string in the\n[RFC 3339](https://www.ietf.org/rfc/rfc3339.txt).\n\nFor example: 2018-04-01T01:30:15.01Z\n\nCreate Time is assigned by the server and cannot be changed.\n",
@@ -974,11 +555,11 @@
                         "$ref": "#/components/schemas/Reference"
                     },
                     "name": {
-                        "description": "Resource name is a user-friendly identifier for a resource.\n\nnames:\n\n- allow all alpha-numeric characters;\n- allow special characters: \u003cspace\u003e and these characters inside the quotes \"@#$%-_\";\n- allow length of 1 to 1024 characters;\n",
+                        "description": "Resource name is a user-friendly identifier for a resource.\n\nnames:\n\n- allow all alpha-numeric characters;\n- allow special characters: \u003cspace\u003e and these characters inside the quotes \"@#$%-_\";\n- allow length of 1 to 64 characters;\n- no leading or trailing spaces\n",
                         "example": "resource-name",
-                        "maxLength": 100,
+                        "maxLength": 64,
                         "minLength": 1,
-                        "pattern": "^[A-Za-z0-9\\s@#$%-_]+$",
+                        "pattern": "^[A-Za-z0-9@_-]+(?:[A-Za-z0-9@# _-]*[A-Za-z0-9@#_-])?$",
                         "type": "string"
                     },
                     "tags": {
@@ -991,7 +572,9 @@
                             "emea"
                         ],
                         "items": {
-                            "maxLength": 2048,
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[\\S]+$",
                             "type": "string"
                         },
                         "type": "array"
@@ -1016,32 +599,8 @@
                 ],
                 "type": "object"
             },
-            "NamedLinks": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/SelfLinks"
-                    },
-                    {
-                        "description": "Contains information about the object being referred to.\n\nThese are generally details -- like the object name and display name --\nthat are useful to a consumer of the API that performs further\nprocessing.\n\nThis object is only present in responses.\n",
-                        "properties": {
-                            "displayName": {
-                                "description": "A user friendly resource name.",
-                                "example": "Production Environment",
-                                "maxLength": 2048,
-                                "type": "string"
-                            },
-                            "name": {
-                                "description": "The name of the linked resource.\n",
-                                "example": "production",
-                                "maxLength": 100,
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
             "Placement": {
+                "additionalProperties": false,
                 "properties": {
                     "instanceGroupRefs": {
                         "items": {
@@ -1056,187 +615,8 @@
                 ],
                 "type": "object"
             },
-            "Policy": {
-                "description": "Contains the policy to upload.",
-                "properties": {
-                    "desiredState": {
-                        "$ref": "#/components/schemas/PolicyDesiredState"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata",
-                    "desiredState"
-                ],
-                "type": "object"
-            },
-            "PolicyCurrentStatus": {
-                "description": "Shows the current status of the policy.",
-                "properties": {
-                    "content": {
-                        "$ref": "#/components/schemas/PolicyData"
-                    },
-                    "state": {
-                        "$ref": "#/components/schemas/State"
-                    }
-                },
-                "required": [
-                    "state",
-                    "data"
-                ],
-                "type": "object"
-            },
-            "PolicyData": {
-                "description": "Contains the policy to upload.",
-                "example": {
-                    "policy": {
-                        "applicationLanguage": "utf-8",
-                        "bot-defense": {
-                            "settings": {
-                                "isEnabled": false
-                            }
-                        },
-                        "cookies": [
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "*",
-                                "type": "wildcard"
-                            }
-                        ],
-                        "enforcementMode": "blocking",
-                        "headers": [
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "*",
-                                "type": "wildcard"
-                            },
-                            {
-                                "decodeValueAsBase64": "required",
-                                "name": "*-bin",
-                                "type": "wildcard"
-                            },
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "Referer",
-                                "type": "explicit"
-                            },
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "Authorization",
-                                "type": "explicit"
-                            },
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "Transfer-Encoding",
-                                "type": "explicit"
-                            }
-                        ],
-                        "name": "mynappolicy",
-                        "parameters": [
-                            {
-                                "decodeValueAsBase64": "disabled",
-                                "name": "*",
-                                "type": "wildcard"
-                            }
-                        ],
-                        "signatures": [
-                            {
-                                "enabled": false,
-                                "signatureId": 123458888
-                            },
-                            {
-                                "enabled": false,
-                                "signatureId": 200000098
-                            },
-                            {
-                                "enabled": false,
-                                "signatureId": 200001475
-                            },
-                            {
-                                "enabled": false,
-                                "signatureId": 200002595
-                            }
-                        ],
-                        "template": {
-                            "name": "POLICY_TEMPLATE_NGINX_BASE"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "PolicyDesiredState": {
-                "description": "The defired state of the policy",
-                "properties": {
-                    "content": {
-                        "$ref": "#/components/schemas/PolicyData"
-                    }
-                },
-                "required": [
-                    "content"
-                ],
-                "type": "object"
-            },
-            "PolicyList": {
-                "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/PolicyStatus"
-                        },
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "items"
-                ],
-                "type": "object"
-            },
-            "PolicyStatus": {
-                "properties": {
-                    "currentStatus": {
-                        "$ref": "#/components/schemas/PolicyCurrentStatus"
-                    },
-                    "desiredState": {
-                        "$ref": "#/components/schemas/PolicyDesiredState"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata",
-                    "desiredState",
-                    "currentStatus"
-                ],
-                "type": "object"
-            },
-            "RandomLBMethod": {
-                "properties": {
-                    "twoServerLBMethod": {
-                        "description": "Values applicable to a TcpUdp Component are: [LEAST_CONNECTIONS, LEAST_TIME_HEADER, LEAST_TIME_LAST_BYTE];\nValues applicable to a TCP/UDP Component are: [LEAST_CONNECTIONS, LEAST_TIME_CONNECT, LEAST_TIME_FIRST_BYTE, LEAST_TIME_LAST_BYTE].\n",
-                        "enum": [
-                            "LEAST_CONNECTIONS",
-                            "LEAST_TIME_HEADER",
-                            "LEAST_TIME_CONNECT",
-                            "LEAST_TIME_FIRST_BYTE",
-                            "LEAST_TIME_LAST_BYTE"
-                        ],
-                        "type": "string"
-                    },
-                    "type": {
-                        "enum": [
-                            "RANDOM"
-                        ],
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "type"
-                ],
-                "type": "object"
-            },
             "Reference": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "example": "main web",
@@ -1260,24 +640,8 @@
                 "maxLength": 100,
                 "type": "string"
             },
-            "ResourceRef": {
-                "properties": {
-                    "links": {
-                        "$ref": "#/components/schemas/NamedLinks"
-                    },
-                    "ref": {
-                        "description": "A reference to another NGINX Controller resource.\n",
-                        "example": "/environments/prod",
-                        "maxLength": 2048,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "ref"
-                ],
-                "type": "object"
-            },
             "RoundRobinLB": {
+                "additionalProperties": false,
                 "properties": {
                     "type": {
                         "enum": [
@@ -1291,19 +655,8 @@
                 ],
                 "type": "object"
             },
-            "SelfLinks": {
-                "description": "The SelfLinks object contains a link from the resource to itself.\nThis object is used only in responses.\n",
-                "properties": {
-                    "rel": {
-                        "description": "`rel` contains the complete path fragment of a URI and can be used\nto construct a query to the object.\n",
-                        "example": "/api/adc/v1/environments/prod",
-                        "maxLength": 2048,
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
             "SelfState": {
+                "additionalProperties": false,
                 "properties": {
                     "status": {
                         "description": "CONFIGURING - The configuration of the resource is in process.\nCONFIGURED  - The configuration operation is complete.\nDELETING    - The resource is being deleted.\nERROR       - An error occurred while configuring the resource\n",
@@ -1351,6 +704,7 @@
                 "type": "object"
             },
             "Site": {
+                "additionalProperties": false,
                 "description": "A collection of instance and instance groups for workload affinity and RBAC\n",
                 "properties": {
                     "instanceGroupRefs": {
@@ -1367,7 +721,8 @@
                     }
                 },
                 "required": [
-                    "metadata"
+                    "metadata",
+                    "instanceGroupRefs"
                 ],
                 "type": "object"
             },
@@ -1399,6 +754,7 @@
                 "type": "integer"
             },
             "State": {
+                "additionalProperties": false,
                 "description": "A representation of the resource's current configuration state\nthat comprises the status of the resource itself (`self`) and any child\nresources (`children`).\n",
                 "properties": {
                     "children": {
@@ -1425,129 +781,12 @@
                 ],
                 "type": "object"
             },
-            "Strategy": {
-                "description": "Contains the strategy to upload.",
-                "properties": {
-                    "desiredState": {
-                        "$ref": "#/components/schemas/StrategyDesiredState"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata",
-                    "desiredState"
-                ],
-                "type": "object"
-            },
-            "StrategyCurrentStatus": {
-                "description": "Shows the current status of the strategy.",
-                "properties": {
-                    "content": {
-                        "$ref": "#/components/schemas/StrategyData"
-                    },
-                    "state": {
-                        "$ref": "#/components/schemas/State"
-                    }
-                },
-                "required": [
-                    "state",
-                    "content"
-                ],
-                "type": "object"
-            },
-            "StrategyData": {
-                "description": "Strategy Data.",
-                "properties": {
-                    "securityPolicyRef": {
-                        "description": "Reference to the Nginx Application Protection policy used in this strategy.",
-                        "example": "/security/policies/mynappolicy",
-                        "maxLength": 2048,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "securityPolicyRef"
-                ],
-                "type": "object"
-            },
-            "StrategyDesiredState": {
-                "description": "The defired state of the strategy",
-                "properties": {
-                    "content": {
-                        "$ref": "#/components/schemas/StrategyData"
-                    }
-                },
-                "required": [
-                    "content"
-                ],
-                "type": "object"
-            },
-            "StrategyList": {
-                "properties": {
-                    "items": {
-                        "items": {
-                            "$ref": "#/components/schemas/StrategyStatus"
-                        },
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "items"
-                ],
-                "type": "object"
-            },
-            "StrategyStatus": {
-                "properties": {
-                    "currentStatus": {
-                        "$ref": "#/components/schemas/StrategyCurrentStatus"
-                    },
-                    "desiredState": {
-                        "$ref": "#/components/schemas/StrategyDesiredState"
-                    },
-                    "metadata": {
-                        "$ref": "#/components/schemas/Metadata"
-                    }
-                },
-                "required": [
-                    "metadata",
-                    "desiredState",
-                    "currentStatus"
-                ],
-                "type": "object"
-            },
             "TLS": {
+                "additionalProperties": false,
                 "description": "TLS settings applicable to URIs.",
                 "properties": {
                     "certRef": {
                         "$ref": "#/components/schemas/Reference"
-                    },
-                    "cipher": {
-                        "example": "ALL:!aNULL:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;",
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "preferServerCipher": {
-                        "$ref": "#/components/schemas/ServiceConfigState"
-                    },
-                    "protocols": {
-                        "items": {
-                            "maxLength": 2048,
-                            "pattern": "TLSv1|TLSv1\\.[1-3]|SSLv2|SSLv3",
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    "sessionCache": {
-                        "default": "OFF",
-                        "enum": [
-                            "OFF",
-                            "NONE",
-                            "BUILTIN",
-                            "SHARED"
-                        ],
-                        "type": "string"
                     }
                 },
                 "required": [
@@ -1556,6 +795,7 @@
                 "type": "object"
             },
             "TcpUdpComponent": {
+                "additionalProperties": false,
                 "description": "A TcpUdp Component represents the processing -- stream proxying.\n-- of traffic associated with a logical part (for example, microservice) of an application/API. It also defines the subsequent\nload balancing of traffic to workloads implementing that part of the application/API.\n\nTcpUdp components are used to configure NGINX functionality associated with TCP/UDP protocols and inherit tcpudp and common\nsettings from linked Gateways.\n",
                 "properties": {
                     "backend": {
@@ -1580,18 +820,20 @@
                 "type": "object"
             },
             "TcpUdpComponentBackend": {
+                "additionalProperties": false,
                 "description": "Backend settings in a TcpUdp Component.\n",
                 "properties": {
                     "workloadGroups": {
-                        "additionalProperties": {
+                        "items": {
                             "$ref": "#/components/schemas/TcpUdpComponentWorkloadGroup"
                         },
-                        "type": "object"
+                        "type": "array"
                     }
                 },
                 "type": "object"
             },
             "TcpUdpComponentIngress": {
+                "additionalProperties": false,
                 "description": "Ingress settings in a TcpUdp Component.",
                 "properties": {
                     "gatewayRefs": {
@@ -1614,21 +856,56 @@
                 "type": "object"
             },
             "TcpUdpComponentIngressURI": {
+                "additionalProperties": false,
                 "properties": {
                     "customExtensions": {
                         "type": "object"
                     },
                     "tls": {
                         "$ref": "#/components/schemas/TLS"
+                    },
+                    "uri": {
+                        "description": "Defines the URI in TcpUdp Components.\nFor URIs in TcpUdp Components, `uris` must conform to the format `schema://address[:port]`\nExamples:\n  - `tcp://192.0.2.247`\n  - `udp://192.0.2.3`\n",
+                        "example": "tcp://192.0.2.247",
+                        "type": "string"
                     }
                 },
+                "required": [
+                    "uri"
+                ],
                 "type": "object"
             },
             "TcpUdpComponentIngressURIs": {
-                "additionalProperties": {
+                "items": {
                     "$ref": "#/components/schemas/TcpUdpComponentIngressURI"
                 },
-                "description": "Defines the URI in TcpUdp Components.\n\nFor URIs in TcpUdp Components, `uris` must conform to the format `schema://address[:port]`\n  Examples:\n  - `tcp://192.0.2.247`\n  - `udp://192.0.2.3`\n",
+                "type": "array"
+            },
+            "TcpUdpComponentLeastTimeLBMethod": {
+                "additionalProperties": false,
+                "properties": {
+                    "latencyParameter": {
+                        "default": "CONNECT",
+                        "enum": [
+                            "CONNECT",
+                            "CONNECT_INFLIGHT",
+                            "FIRST_BYTE",
+                            "FIRST_BYTE_INFLIGHT",
+                            "LAST_BYTE",
+                            "LAST_BYTE_INFLIGHT"
+                        ],
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "LEAST_TIME"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
                 "type": "object"
             },
             "TcpUdpComponentList": {
@@ -1651,56 +928,111 @@
                 },
                 "type": "object"
             },
+            "TcpUdpComponentLoadBalancingMethod": {
+                "discriminator": {
+                    "additionalProperties": false,
+                    "mapping": {
+                        "HASH": "#/components/schemas/HashLBMethod",
+                        "LEAST_CONNECTIONS": "#/components/schemas/LeastConnLB",
+                        "LEAST_TIME": "#/components/schemas/TcpUdpComponentLeastTimeLBMethod",
+                        "RANDOM": "#/components/schemas/TcpUdpComponentRandomLBMethod",
+                        "ROUND_ROBIN": "#/components/schemas/RoundRobinLB"
+                    },
+                    "propertyName": "type"
+                },
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/RoundRobinLB"
+                    },
+                    {
+                        "$ref": "#/components/schemas/LeastConnLB"
+                    },
+                    {
+                        "$ref": "#/components/schemas/HashLBMethod"
+                    },
+                    {
+                        "$ref": "#/components/schemas/TcpUdpComponentLeastTimeLBMethod"
+                    },
+                    {
+                        "$ref": "#/components/schemas/TcpUdpComponentRandomLBMethod"
+                    }
+                ]
+            },
+            "TcpUdpComponentRandomLBMethod": {
+                "additionalProperties": false,
+                "properties": {
+                    "twoServerLBMethod": {
+                        "enum": [
+                            "LEAST_CONNECTIONS",
+                            "LEAST_TIME_CONNECT",
+                            "LEAST_TIME_FIRST_BYTE",
+                            "LEAST_TIME_LAST_BYTE"
+                        ],
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "RANDOM"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
             "TcpUdpComponentSettings": {
+                "additionalProperties": false,
                 "description": "The current snapshot of the TCP/UDP component settings that are reflected in the configuration on NGINX instances referenced by this TCP/UDP Component.\n",
                 "properties": {
                     "templateRef": {
-                        "maxLength": 2048,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Reference"
                     }
                 },
                 "type": "object"
             },
             "TcpUdpComponentWorkloadGroup": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "customExtensions": {
-                                "type": "object"
-                            },
-                            "loadBalancingMethod": {
-                                "$ref": "#/components/schemas/LoadBalancingMethod"
-                            },
-                            "siteRefs": {
-                                "items": {
-                                    "$ref": "#/components/schemas/Reference"
-                                },
-                                "type": "array"
-                            },
-                            "uris": {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/TcpUdpComponentWorkloadUri"
-                                },
-                                "description": "The URI for a server hosting a part of a TcpUdp application.\n\nIt must conform to the format `schema://address[:port]`\nwhere schema is chosen from tcp or udp, address is IP or hostname,\nschema and address must be provided.\n\nFor example:\n\n- `tcp://192.0.2.247`\n- `udp://192.0.2.247:8443`\n",
-                                "type": "object"
-                            }
-                        },
+                "additionalProperties": false,
+                "description": "Group of servers hosting a part of a TcpUdp application represented by a Component.",
+                "properties": {
+                    "customExtensions": {
                         "type": "object"
+                    },
+                    "loadBalancingMethod": {
+                        "$ref": "#/components/schemas/TcpUdpComponentLoadBalancingMethod"
+                    },
+                    "name": {
+                        "example": "workgroup-1",
+                        "type": "string"
+                    },
+                    "siteRefs": {
+                        "items": {
+                            "$ref": "#/components/schemas/Reference"
+                        },
+                        "type": "array"
+                    },
+                    "uris": {
+                        "items": {
+                            "$ref": "#/components/schemas/TcpUdpComponentWorkloadUri"
+                        },
+                        "type": "array"
                     }
+                },
+                "required": [
+                    "name"
                 ],
-                "description": "Group of servers hosting a part of a TcpUdp application represented by a Component."
+                "type": "object"
             },
             "TcpUdpComponentWorkloadUri": {
+                "additionalProperties": false,
+                "description": "The URI for a server hosting a part of a TcpUdp application.\n\nIt must conform to the format `schema://address[:port]`\nwhere schema is chosen from tcp or udp, address is IP or hostname,\nschema and address must be provided.\n\nFor example:\n- `tcp://192.0.2.247`\n- `udp://192.0.2.247:8443`\n",
                 "properties": {
                     "isBackup": {
                         "default": false,
                         "type": "boolean"
                     },
                     "isDown": {
-                        "default": false,
-                        "type": "boolean"
-                    },
-                    "isDrain": {
                         "default": false,
                         "type": "boolean"
                     },
@@ -1714,8 +1046,8 @@
                         "minimum": 0,
                         "type": "integer"
                     },
-                    "srvService": {
-                        "maxLength": 2048,
+                    "uri": {
+                        "example": "udp://192.0.2.247:8443",
                         "type": "string"
                     },
                     "weight": {
@@ -1724,34 +1056,36 @@
                         "type": "integer"
                     }
                 },
-                "type": "object"
-            },
-            "TemplateName": {
-                "description": "Name of the template.",
-                "maxLength": 100,
-                "type": "string"
-            },
-            "TemplateType": {
-                "description": "Type of the template.",
-                "enum": [
-                    "gateways",
-                    "web-components",
-                    "web-components-locations",
-                    "tcp-udp-components"
+                "required": [
+                    "uri"
                 ],
-                "type": "string"
+                "type": "object"
             },
             "TotalResults": {
                 "minimum": 0,
                 "type": "integer"
             },
+            "UseCases": {
+                "items": {
+                    "$ref": "#/components/schemas/EnvironmentUseCase"
+                },
+                "type": "array"
+            },
             "WebComponent": {
+                "additionalProperties": false,
                 "description": "A component represents the processing –- reverse proxying, rate limiting, security policy enforcement, header rewrites, etc.\n–- of traffic associated with a logical part (for example, microservice) of an application/API. It also defines the subsequent\nload balancing of traffic to workloads implementing that part of the application/API.\n\nWeb components are used to configure NGINX functionality associated with HTTP/HTTPS protocols and inherit web and common\nsettings from linked Gateways.\n",
                 "properties": {
                     "backend": {
                         "$ref": "#/components/schemas/WebComponentBackend"
                     },
                     "customExtensions": {
+                        "description": "Generates dynamic content structure based on what usecases are enabled on the environment level.\n",
+                        "example": {
+                            "appProtect": {
+                                "loggingPolicy": "log_illegal",
+                                "securityPolicy": "NginxStrictPolicy"
+                            }
+                        },
                         "type": "object"
                     },
                     "ingress": {
@@ -1770,18 +1104,20 @@
                 "type": "object"
             },
             "WebComponentBackend": {
+                "additionalProperties": false,
                 "description": "Backend settings in a Web Component.\n",
                 "properties": {
                     "workloadGroups": {
-                        "additionalProperties": {
+                        "items": {
                             "$ref": "#/components/schemas/WebComponentWorkloadGroup"
                         },
-                        "type": "object"
+                        "type": "array"
                     }
                 },
                 "type": "object"
             },
             "WebComponentIngress": {
+                "additionalProperties": false,
                 "description": "Ingress settings in a Web Component.",
                 "properties": {
                     "gatewayRefs": {
@@ -1801,21 +1137,64 @@
                 "type": "object"
             },
             "WebComponentIngressURI": {
+                "additionalProperties": false,
                 "properties": {
                     "customExtensions": {
+                        "description": "Generates dynamic content structure based on what usecases are enabled on the environment level.\n",
+                        "example": {
+                            "rewritesAndRedirects": {
+                                "return": {
+                                    "code": 307,
+                                    "textOrURL": "http://f5.com"
+                                },
+                                "rewriteLog": true
+                            }
+                        },
                         "type": "object"
                     },
                     "matchMethod": {
                         "$ref": "#/components/schemas/WebComponentURIMatchMethod"
+                    },
+                    "uri": {
+                        "description": "Defines the URI in Web Components.\n\nFor URIs in Web Components, `uris` can be a relative path that follows the format `/path[/...]`;\nadditionally each URI can have a match method specified.\nExamples:\n  - `/images`\n  - `/*.jpg`\n  - `/locations/us/wa*`\n",
+                        "example": "/images",
+                        "type": "string"
                     }
                 },
+                "required": [
+                    "uri"
+                ],
                 "type": "object"
             },
             "WebComponentIngressURIs": {
-                "additionalProperties": {
+                "items": {
                     "$ref": "#/components/schemas/WebComponentIngressURI"
                 },
-                "description": "Defines the URI in Web Components.\n\nFor URIs in Web Components, `uris` can be a relative path that follows the format `/path[/...]`;\nadditionally each URI can have a match method specified.\n  Examples:\n  - `/images`\n  - `/*.jpg`\n  - `/locations/us/wa*`\n",
+                "type": "array"
+            },
+            "WebComponentLeastTimeLBMethod": {
+                "additionalProperties": false,
+                "properties": {
+                    "latencyParameter": {
+                        "default": "HEADER",
+                        "enum": [
+                            "HEADER",
+                            "HEADER_INFLIGHT",
+                            "LAST_BYTE",
+                            "LAST_BYTE_INFLIGHT"
+                        ],
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "LEAST_TIME"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
                 "type": "object"
             },
             "WebComponentList": {
@@ -1838,22 +1217,79 @@
                 },
                 "type": "object"
             },
+            "WebComponentLoadBalancingMethod": {
+                "discriminator": {
+                    "additionalProperties": false,
+                    "mapping": {
+                        "HASH": "#/components/schemas/HashLBMethod",
+                        "IPHASH": "#/components/schemas/IPHashLB",
+                        "LEAST_CONNECTIONS": "#/components/schemas/LeastConnLB",
+                        "LEAST_TIME": "#/components/schemas/WebComponentLeastTimeLBMethod",
+                        "RANDOM": "#/components/schemas/WebComponentRandomLBMethod",
+                        "ROUND_ROBIN": "#/components/schemas/RoundRobinLB"
+                    },
+                    "propertyName": "type"
+                },
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/RoundRobinLB"
+                    },
+                    {
+                        "$ref": "#/components/schemas/IPHashLB"
+                    },
+                    {
+                        "$ref": "#/components/schemas/LeastConnLB"
+                    },
+                    {
+                        "$ref": "#/components/schemas/HashLBMethod"
+                    },
+                    {
+                        "$ref": "#/components/schemas/WebComponentLeastTimeLBMethod"
+                    },
+                    {
+                        "$ref": "#/components/schemas/WebComponentRandomLBMethod"
+                    }
+                ]
+            },
             "WebComponentLocationsSettings": {
+                "additionalProperties": false,
                 "description": "The current snapshot of the web component locations settings that are reflected in the configuration on NGINX instances referenced by this Web Component Locations.\n",
                 "properties": {
                     "templateRef": {
-                        "maxLength": 2048,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Reference"
                     }
                 },
                 "type": "object"
             },
+            "WebComponentRandomLBMethod": {
+                "additionalProperties": false,
+                "properties": {
+                    "twoServerLBMethod": {
+                        "enum": [
+                            "LEAST_CONNECTIONS",
+                            "LEAST_TIME_HEADER",
+                            "LEAST_TIME_LAST_BYTE"
+                        ],
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "RANDOM"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
             "WebComponentSettings": {
+                "additionalProperties": false,
                 "description": "The current snapshot of the web component settings that are reflected in the configuration on NGINX instances referenced by this Web Component.\n",
                 "properties": {
                     "templateRef": {
-                        "maxLength": 2048,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Reference"
                     }
                 },
                 "type": "object"
@@ -1871,76 +1307,97 @@
                 "type": "string"
             },
             "WebComponentWorkloadGroup": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "customExtensions": {
-                                "type": "object"
-                            },
-                            "loadBalancingMethod": {
-                                "$ref": "#/components/schemas/LoadBalancingMethod"
-                            },
-                            "siteRefs": {
-                                "items": {
-                                    "$ref": "#/components/schemas/Reference"
-                                },
-                                "type": "array"
-                            },
-                            "uris": {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/WebComponentWorkloadUri"
-                                },
-                                "description": "The URI for a server hosting a part of a Web application.\n\nIt must conform to the format `schema://address[:port]`\nwhere schema is chosen from http or https, address is IP or hostname,\nschema and address must be provided.\n\nFor example:\n\n- `http://192.0.2.247`\n- `https://192.0.2.247:8443`\n- `https://www.f5workload.com`\n",
-                                "type": "object"
+                "additionalProperties": false,
+                "description": "Group of servers hosting a part of a Web application represented by a Component.",
+                "properties": {
+                    "customExtensions": {
+                        "description": "Generates dynamic content structure based on what usecases are enabled on the environment level.\n",
+                        "example": {
+                            "tlsSettings": {
+                                "sslCiphers": "ALL:!aNULL:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP",
+                                "sslPreferServerCiphers": "ON",
+                                "sslProtocols": "TLSv1.3"
                             }
                         },
                         "type": "object"
+                    },
+                    "loadBalancingMethod": {
+                        "$ref": "#/components/schemas/WebComponentLoadBalancingMethod"
+                    },
+                    "name": {
+                        "example": "workgroup-1",
+                        "type": "string"
+                    },
+                    "siteRefs": {
+                        "items": {
+                            "$ref": "#/components/schemas/Reference"
+                        },
+                        "type": "array"
+                    },
+                    "uris": {
+                        "items": {
+                            "$ref": "#/components/schemas/WebComponentWorkloadUri"
+                        },
+                        "type": "array"
                     }
+                },
+                "required": [
+                    "name"
                 ],
-                "description": "Group of servers hosting a part of a Web application represented by a Component."
+                "type": "object"
             },
             "WebComponentWorkloadUri": {
+                "additionalProperties": false,
                 "properties": {
                     "isBackup": {
                         "default": false,
+                        "example": true,
                         "type": "boolean"
                     },
                     "isDown": {
                         "default": false,
+                        "example": false,
                         "type": "boolean"
                     },
                     "isDrain": {
                         "default": false,
+                        "example": true,
                         "type": "boolean"
                     },
                     "maxConns": {
                         "default": 0,
+                        "example": 100,
                         "minimum": 0,
                         "type": "integer"
                     },
                     "maxFails": {
                         "default": 1,
+                        "example": 5,
                         "minimum": 0,
                         "type": "integer"
                     },
-                    "srvService": {
-                        "maxLength": 2048,
+                    "uri": {
+                        "example": "http://www.f5.com",
                         "type": "string"
                     },
                     "weight": {
                         "default": 1,
+                        "example": 2,
                         "minimum": 1,
                         "type": "integer"
                     }
                 },
+                "required": [
+                    "uri"
+                ],
                 "type": "object"
             }
         }
     },
     "info": {
-        "description": "Connect, secure, and govern APIs with NGINX Application Delivery Manager, which comes with RESTful APIs to manage the API infrastructure lifecycle for API Ops and API lifecycle for API teams.\n\nNote: When you try out a request, the curl example does not include authentication because after logging into the Application Delivery Manager, you are already authenticated. If you want to run this on your own device, you will need to update authentication for your curl command.\n",
+        "description": "Connect, secure, and govern APIs with NGINX App Delivery Manager, which comes with RESTful APIs to manage the API infrastructure lifecycle for API Ops and API lifecycle for API teams.\n\nNote: When you try out a request, the curl example does not include authentication because after logging into the App Delivery Manager, you are already authenticated. If you want to run this on your own device, you will need to update authentication for your curl command.\n",
         "termsOfService": "https://docs.nginx.com/nginx-instance-manager/",
-        "title": "Application Delivery Manager REST API Spec",
+        "title": "App Delivery Manager REST API Spec",
         "version": "v1"
     },
     "openapi": "3.0.3",
@@ -2014,314 +1471,6 @@
                 "summary": "List all Apps regardless of environments",
                 "tags": [
                     "Apps"
-                ]
-            }
-        },
-        "/environments": {
-            "get": {
-                "description": "Returns a list of all Environment resources.\n",
-                "operationId": "listEnvironments",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/StartIndex"
-                    },
-                    {
-                        "$ref": "#/components/parameters/Count"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SortOrder"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SortBy"
-                    },
-                    {
-                        "$ref": "#/components/parameters/FilterOn"
-                    },
-                    {
-                        "$ref": "#/components/parameters/FilterBy"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EnvironmentList"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved a list of all Environment resources."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to list the Environment resource."
-                    }
-                },
-                "summary": "List all Environments",
-                "tags": [
-                    "Environments"
-                ]
-            },
-            "post": {
-                "description": "Creates a new Environment resource.\n",
-                "operationId": "createEnvironment",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Environment"
-                            }
-                        }
-                    },
-                    "description": "Defines the Environment resource to create."
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Environment"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the specified Environment."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to create the Environment resource."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to a naming conflict with an existing resource."
-                    }
-                },
-                "summary": "Create an Environment",
-                "tags": [
-                    "Environments"
-                ]
-            }
-        },
-        "/environments/{environmentID}": {
-            "delete": {
-                "description": "Deletes the specified Environment resource.",
-                "operationId": "deleteEnvironment",
-                "responses": {
-                    "202": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Environment"
-                                }
-                            }
-                        },
-                        "description": "The Environment resource has been marked for deletion. The Environment will be deleted after the underlying resources have been deleted.\n"
-                    },
-                    "204": {
-                        "description": "Successfully deleted the specified Environment resource. No content returned.\n"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the Environment resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Failed to delete the requested Environment resource.\n\nThe Environment contains references to other objects. Delete the referenced objects or remove the references, then try again.\n"
-                    }
-                },
-                "summary": "Delete an Environment",
-                "tags": [
-                    "Environments"
-                ]
-            },
-            "get": {
-                "description": "Returns information for the specified Environment.\n",
-                "operationId": "getEnvironment",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Environment"
-                                }
-                            }
-                        },
-                        "description": "Successfully returned information for the specified Environment resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to read the Environment resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Get an Environment",
-                "tags": [
-                    "Environments"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "The name of the Environment.",
-                    "in": "path",
-                    "name": "environmentID",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/EnvironmentID"
-                    }
-                }
-            ],
-            "put": {
-                "description": "Creates a new Environment or updates an existing Environment resource.\n",
-                "operationId": "updateEnvironment",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Environment"
-                            }
-                        }
-                    },
-                    "description": "Defines the Environment to create or the updates to make to an existing Environment."
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Environment"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified Environment resource."
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Environment"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the specified Environment resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the Environment resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Upsert an Environment",
-                "tags": [
-                    "Environments"
                 ]
             }
         },
@@ -2940,76 +2089,6 @@
                     }
                 }
             ],
-            "patch": {
-                "description": "Creates a new Gateway or updates an existing Gateway resource.\n",
-                "operationId": "patchGateway",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Gateway"
-                            }
-                        }
-                    },
-                    "description": "Defines the Gateway resource to create or the updates to make to an existing Gateway resource."
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Gateway"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified Gateway resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad request. Check the validity of the JSON body provided in the request and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the Gateway resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Gateway resource not found. Update failed."
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to update or create a Gateway resource failed due to exceeding request processing threshold.\nAllow the server to process existing requests, then try again.\n"
-                    }
-                },
-                "summary": "Patch a Gateway",
-                "tags": [
-                    "Gateways"
-                ]
-            },
             "put": {
                 "description": "Updates an existing Gateway resource.\n",
                 "operationId": "updateGateway",
@@ -3241,7 +2320,7 @@
                 },
                 "summary": "Create a TcpUdp Component",
                 "tags": [
-                    "Components"
+                    "TcpUdp Components"
                 ]
             }
         },
@@ -3391,76 +2470,6 @@
                     }
                 }
             ],
-            "patch": {
-                "description": "Updates an existing TcpUdp Component resource.\n",
-                "operationId": "patchTcpUdpComponent",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TcpUdpComponent"
-                            }
-                        }
-                    },
-                    "description": "Defines the TcpUdp Component resource to create or the updates to make to an existing TcpUdp Component resource."
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TcpUdpComponent"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified TcpUdp Component resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad request. Check the validity of the JSON body provided in the request and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the TcpUdp Component resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "TcpUdp Component resource not found. Update failed."
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to update or create a TcpUdp Component resource failed due to exceeding request processing threshold.\nAllow the server to process existing requests, then try again.\n"
-                    }
-                },
-                "summary": "Patch a TcpUdp Component",
-                "tags": [
-                    "TcpUdp Components"
-                ]
-            },
             "put": {
                 "description": "Updates an existing TcpUdp Component resource.\n",
                 "operationId": "updateTcpUdpComponent",
@@ -3692,7 +2701,7 @@
                 },
                 "summary": "Create a Web Component",
                 "tags": [
-                    "Components"
+                    "Web Components"
                 ]
             }
         },
@@ -3842,76 +2851,6 @@
                     }
                 }
             ],
-            "patch": {
-                "description": "Updates an existing Web Component resource.\n",
-                "operationId": "patchWebComponent",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/WebComponent"
-                            }
-                        }
-                    },
-                    "description": "Defines the Web Component resource to create or the updates to make to an existing Web Component resource."
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/WebComponent"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified Web Component resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad request. Check the validity of the JSON body provided in the request and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the Web Component resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Web Component resource not found. Update failed."
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to update or create a Web Component resource failed due to exceeding request processing threshold.\nAllow the server to process existing requests, then try again.\n"
-                    }
-                },
-                "summary": "Patch a Web Component",
-                "tags": [
-                    "Web Components"
-                ]
-            },
             "put": {
                 "description": "Updates an existing Web Component resource.\n",
                 "operationId": "updateWebComponent",
@@ -4045,1040 +2984,6 @@
                 ]
             }
         },
-        "/platform/agent-keys": {
-            "get": {
-                "description": "Returns the status and metadata for all of the Agent API Keys.",
-                "operationId": "listAgentKeys",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "$ref": "#/components/examples/ListAgentKeyResponse"
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListAgentKeyResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully returned the status and metadata for all of the Agent API Keys."
-                    }
-                },
-                "summary": "List all Agent Keys for the current account",
-                "tags": [
-                    "AgentKeys"
-                ]
-            },
-            "post": {
-                "description": "Creates a new AgentKey resource.",
-                "operationId": "createAgentKey",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "$ref": "#/components/examples/AgentKeyRequest"
-                            },
-                            "schema": {
-                                "$ref": "#/components/schemas/AgentKeyRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "$ref": "#/components/examples/AgentKey"
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetAgentKeyResponse"
-                                }
-                            }
-                        },
-                        "description": "The Agent Key resource has been created."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 12345,
-                                    "message": "Error creating the Agent Key: could not parse the request payload. Check the format of the request, then try again."
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter or URI. Check the input for typos and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 12345,
-                                    "message": "Error creating the Agent Key: an Agent Key with that name already exists. Use a unique name for the Agent Key, then try again."
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to a conflict with an existing Agent API Key resource."
-                    }
-                },
-                "summary": "Create an Agent API Key",
-                "tags": [
-                    "AgentKeys"
-                ]
-            },
-            "x-f5-private": true
-        },
-        "/platform/agent-keys/{agentKeyName}": {
-            "get": {
-                "description": "Returns the status and metadata for a single Agent API Key",
-                "operationId": "getAgentKey",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AgentKeyName"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "$ref": "#/components/examples/AgentKey"
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetAgentKeyResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully returned the details for an Agemt API Key."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 12345,
-                                    "message": "Error getting the agent API key: the specified key does not exist. Check the agent key name, then try again."
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Agent API Key not found."
-                    }
-                },
-                "summary": "Get an Agent API Key",
-                "tags": [
-                    "AgentKeys"
-                ]
-            },
-            "patch": {
-                "description": "Updates the display name of an existing Agent Key.",
-                "operationId": "updateAgentKey",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AgentKeyName"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "$ref": "#/components/examples/AgentKeyUpdateRequest"
-                            },
-                            "schema": {
-                                "$ref": "#/components/schemas/AgentKeyRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "$ref": "#/components/examples/AgentKey"
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetAgentKeyResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the existing Agent API Key."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 12345,
-                                    "message": "Error updating the Agent API Key: could not parse the request payload. Check the format of the request, then try again."
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter or URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 12345,
-                                    "message": "Error updating the Agent API Key: the specified Agent Key does not exist. Check the Agent Key name, then try again."
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Agent API Key not found."
-                    }
-                },
-                "summary": "Update an Agent Key",
-                "tags": [
-                    "AgentKeys"
-                ]
-            },
-            "x-f5-private": true
-        },
-        "/platform/integrations": {
-            "get": {
-                "description": "Returns an unfiltered list of account Integrations.",
-                "operationId": "listIntegrations",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListIntegrationResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully retreived all Integration accounts."
-                    }
-                },
-                "summary": "List all Integrations",
-                "tags": [
-                    "Integrations"
-                ]
-            },
-            "post": {
-                "description": "Creates a new Integration account.",
-                "operationId": "addIntegration",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Integration"
-                            }
-                        }
-                    },
-                    "description": "Defines the Integration account to be added."
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetIntegrationResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the requested Integration."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to a conflict with an existing Integration."
-                    }
-                },
-                "summary": "Create an Integration account",
-                "tags": [
-                    "Integrations"
-                ]
-            }
-        },
-        "/platform/integrations/{integrationName}": {
-            "delete": {
-                "description": "Deletes the specified Integration account resource.",
-                "operationId": "deleteIntegration",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/IntegrationName"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successfully deleted the specified Integration resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    }
-                },
-                "summary": "Delete an Integration account",
-                "tags": [
-                    "Integrations"
-                ]
-            },
-            "get": {
-                "description": "Gets information about a specific Integration account.",
-                "operationId": "getIntegration",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/IntegrationName"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetIntegrationResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved the requested Integration account."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Integration not found."
-                    }
-                },
-                "summary": "Get an Integration account",
-                "tags": [
-                    "Integrations"
-                ]
-            },
-            "put": {
-                "description": "Updates an Integration account.",
-                "operationId": "updateIntegration",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/IntegrationName"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Integration"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetIntegrationResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully received the request to update the specified Integration account."
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetIntegrationResponse"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified Integration account."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    }
-                },
-                "summary": "Update an Integration account",
-                "tags": [
-                    "Integrations"
-                ]
-            }
-        },
-        "/security/policies": {
-            "get": {
-                "description": "Returns a list of Policy metadata objects for all of the Policies.",
-                "operationId": "listPolicies",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PolicyList"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved a list of Policies."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "List all Policies",
-                "tags": [
-                    "Policies"
-                ]
-            },
-            "post": {
-                "description": "Creates a new Policy resource.\n",
-                "operationId": "createPolicy",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Policy"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PolicyStatus"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the specified Policy resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to a naming conflict with an existing resource."
-                    }
-                },
-                "summary": "Create a Policy",
-                "tags": [
-                    "Policies"
-                ]
-            }
-        },
-        "/security/policies/{policyName}": {
-            "delete": {
-                "description": "Deletes the specified Policy resource.",
-                "operationId": "deletePolicy",
-                "responses": {
-                    "204": {
-                        "description": "The specified Policy resource was successfully deleted."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to delete the specified Policy resource failed.\nThe Policy is referenced by active objects and cannot be deleted. Delete the referencing objects or remove the references, then try again.\n"
-                    }
-                },
-                "summary": "Delete a Policy",
-                "tags": [
-                    "Policies"
-                ]
-            },
-            "get": {
-                "description": "Returns information for a specific Policy resource.",
-                "operationId": "getPolicy",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PolicyStatus"
-                                }
-                            }
-                        },
-                        "description": "Sucessfully retrieved the requested Policy."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Get a Policy",
-                "tags": [
-                    "Policies"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "The name of the Policy.",
-                    "in": "path",
-                    "name": "policyName",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/ResourceName"
-                    }
-                }
-            ],
-            "put": {
-                "description": "Creates a new Policy or updates an existing Policy resource.",
-                "operationId": "updatePolicy",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Policy"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PolicyStatus"
-                                }
-                            }
-                        },
-                        "description": "Sucessfully updated the specified Policy resource."
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PolicyStatus"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the requested Policy resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Upsert a Policy",
-                "tags": [
-                    "Policies"
-                ]
-            }
-        },
-        "/security/strategies": {
-            "get": {
-                "description": "Returns a list of Strategy metadata objects for all of the Strategies.",
-                "operationId": "StrategyServiceList",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StrategyList"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved a list of Strategies."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "List all Strategies",
-                "tags": [
-                    "Strategies"
-                ]
-            },
-            "post": {
-                "description": "Creates a new Strategy resource.\n",
-                "operationId": "StrategyServicePost",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Strategy"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StrategyStatus"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the specified Strategy resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to a naming conflict with an existing resource."
-                    }
-                },
-                "summary": "Create a Strategy",
-                "tags": [
-                    "Strategies"
-                ]
-            }
-        },
-        "/security/strategies/{strategyName}": {
-            "delete": {
-                "description": "Deletes the specified Strategy resource.",
-                "operationId": "StrategyServiceDelete",
-                "responses": {
-                    "204": {
-                        "description": "The specified Strategy resource was successfully deleted."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to delete the specified Strategy resource failed.\nThe Strategy is referenced by active objects and cannot be deleted. Delete the referencing objects or remove the references, then try again.\n"
-                    }
-                },
-                "summary": "Delete a Strategy",
-                "tags": [
-                    "Strategies"
-                ]
-            },
-            "get": {
-                "description": "Returns information for a specific Strategy resource.",
-                "operationId": "StrategyServiceGet",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StrategyStatus"
-                                }
-                            }
-                        },
-                        "description": "Sucessfully retrieved the requested Strategy."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Get a Strategy",
-                "tags": [
-                    "Strategies"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "The name of the Strategy.",
-                    "in": "path",
-                    "name": "strategyName",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/ResourceName"
-                    }
-                }
-            ],
-            "put": {
-                "description": "Creates a new Strategy or updates an existing Strategy resource.",
-                "operationId": "StrategyServicePut",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Strategy"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StrategyStatus"
-                                }
-                            }
-                        },
-                        "description": "Sucessfully updated the specified Strategy resource."
-                    },
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StrategyStatus"
-                                }
-                            }
-                        },
-                        "description": "Successfully created the requested Strategy resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad input parameter, or possibly a bad URI. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Upsert a Strategy",
-                "tags": [
-                    "Strategies"
-                ]
-            }
-        },
-        "/services": {
-            "get": {
-                "description": "Returns a metadata list of the requested resource. The resources that can be queried is currently restricted to published-apis.\n",
-                "operationId": "listResources",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/Metadata"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved a metadata list of the requested resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the query parameters could not be found or is not yet supported. Check the input for typos and try again."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The environment defined in the query parameters could not be found."
-                    }
-                },
-                "summary": "List the metadata for all instances of the desired resource.",
-                "tags": [
-                    "Services"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "Desired resource to list.",
-                    "explode": false,
-                    "in": "query",
-                    "name": "resource",
-                    "required": true,
-                    "schema": {
-                        "enum": [
-                            "published-apis"
-                        ],
-                        "type": "string"
-                    },
-                    "style": "form"
-                },
-                {
-                    "description": "Filter desired resource based on the environment.",
-                    "explode": false,
-                    "in": "query",
-                    "name": "environment",
-                    "schema": {
-                        "maxLength": 2048,
-                        "type": "string"
-                    },
-                    "style": "form"
-                }
-            ],
-            "x-f5-experimental": true
-        },
-        "/services/errorsets": {
-            "get": {
-                "description": "Returns a list of all the Error Sets.",
-                "operationId": "listErrorSets",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorSetList"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved a list of Error Sets."
-                    }
-                },
-                "summary": "List all Error Sets.",
-                "tags": [
-                    "ErrorSets"
-                ]
-            }
-        },
-        "/services/errorsets/{errorSetName}": {
-            "get": {
-                "description": "Returns the information for a specific Error Set.",
-                "operationId": "getErrorSet",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorSet"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieved the requested Error Set."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    }
-                },
-                "summary": "Get an Error Set.",
-                "tags": [
-                    "ErrorSets"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "The name of the Error Set.",
-                    "in": "path",
-                    "name": "errorSetName",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/ResourceName"
-                    }
-                }
-            ]
-        },
         "/sites": {
             "get": {
                 "description": "Returns a list of all Sites.",
@@ -5125,6 +3030,12 @@
                             ],
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/FilterOn"
+                    },
+                    {
+                        "$ref": "#/components/parameters/FilterBy"
                     }
                 ],
                 "responses": {
@@ -5332,76 +3243,6 @@
                     }
                 }
             ],
-            "patch": {
-                "description": "Creates a new Site or updates an existing Site resource.\n",
-                "operationId": "patchSite",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Site"
-                            }
-                        }
-                    },
-                    "description": "Defines the Site resource to create or the updates to make to an existing Site resource."
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Site"
-                                }
-                            }
-                        },
-                        "description": "Successfully updated the specified Site resource."
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Bad request. Check the validity of the JSON body provided in the request and try again."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Access denied. User does not have access to update the Site resource."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "Site resource not found. Update failed."
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request to update or create a Site resource failed due to exceeding request processing threshold.\nAllow the server to process existing requests, then try again.\n"
-                    }
-                },
-                "summary": "Patch a Site",
-                "tags": [
-                    "Sites"
-                ]
-            },
             "put": {
                 "description": "Update an existing Site resource.",
                 "operationId": "updateSite",
@@ -5473,23 +3314,38 @@
                 ]
             }
         },
-        "/templates/{templateType}": {
+        "/tcpudp-components": {
             "get": {
-                "description": "Returns a list of available templates",
-                "operationId": "listTemplates",
+                "description": "Returns a list of all TcpUdp Components constrained only by filters.\n",
+                "operationId": "listGatewayTcpUdpComponents",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FilterOnGateway"
+                    },
+                    {
+                        "$ref": "#/components/parameters/FilterBy"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "type": "array"
+                                    "$ref": "#/components/schemas/TcpUdpComponentList"
                                 }
                             }
                         },
-                        "description": "Successfully retrieves templates list."
+                        "description": "Successfully retrieved a list of all TcpUdp Components constrained only by filters."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorModel"
+                                }
+                            }
+                        },
+                        "description": "Bad request. Check validity of query parameters."
                     },
                     "403": {
                         "content": {
@@ -5499,7 +3355,7 @@
                                 }
                             }
                         },
-                        "description": "The request failed due to insufficient privileges."
+                        "description": "Access denied. User does not have access to list the Component resources."
                     },
                     "404": {
                         "content": {
@@ -5510,49 +3366,46 @@
                             }
                         },
                         "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request cannot be processed because of an internal server error."
                     }
                 },
-                "summary": "List available templates",
+                "summary": "List all TcpUdp Components constrained only by filters",
                 "tags": [
-                    "Templates"
+                    "TcpUdp Components Filters Only"
                 ]
-            },
-            "parameters": [
-                {
-                    "description": "Type of the template.",
-                    "in": "path",
-                    "name": "templateType",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/TemplateType"
-                    }
-                }
-            ]
+            }
         },
-        "/templates/{templateType}/{templateName}": {
+        "/web-components": {
             "get": {
-                "description": "Returns the specified template contents",
-                "operationId": "getTemplate",
+                "description": "Returns a list of all Web Components constrained only by filters.\n",
+                "operationId": "listGatewayWebComponents",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FilterOnGateway"
+                    },
+                    {
+                        "$ref": "#/components/parameters/FilterBy"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "content": {
-                            "text/plain": {
+                            "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "$ref": "#/components/schemas/WebComponentList"
                                 }
                             }
                         },
-                        "description": "Successfully retrieves the specified template contents."
+                        "description": "Successfully retrieved a list of all Web Components constrained only by filters."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorModel"
+                                }
+                            }
+                        },
+                        "description": "Bad request. Check validity of query parameters."
                     },
                     "403": {
                         "content": {
@@ -5562,7 +3415,7 @@
                                 }
                             }
                         },
-                        "description": "The request failed due to insufficient privileges."
+                        "description": "Access denied. User does not have access to list the Component resources."
                     },
                     "404": {
                         "content": {
@@ -5573,128 +3426,22 @@
                             }
                         },
                         "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request cannot be processed because of an internal server error."
                     }
                 },
-                "summary": "Get template contents",
+                "summary": "List all Web Components constrained only by filters",
                 "tags": [
-                    "Template"
+                    "Web Components Filters Only"
                 ]
-            },
-            "parameters": [
-                {
-                    "description": "Type of the template.",
-                    "in": "path",
-                    "name": "templateType",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/TemplateType"
-                    }
-                },
-                {
-                    "description": "Name of the template you want to access.",
-                    "in": "path",
-                    "name": "templateName",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/TemplateName"
-                    }
-                }
-            ]
-        },
-        "/templates/{templateType}/{templateName}/schema": {
-            "get": {
-                "description": "Returns the specified template JSON schema",
-                "operationId": "getSchema",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json+schema": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successfully retrieves JSON schema for the specified template."
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request failed due to insufficient privileges."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The resource defined in the URI could not be found. Check the URI for errors and try again."
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorModel"
-                                }
-                            }
-                        },
-                        "description": "The request cannot be processed because of an internal server error."
-                    }
-                },
-                "summary": "Get a template schema",
-                "tags": [
-                    "Template schema"
-                ]
-            },
-            "parameters": [
-                {
-                    "description": "Type of the template.",
-                    "in": "path",
-                    "name": "templateType",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/TemplateType"
-                    }
-                },
-                {
-                    "description": "Name of the template you want to access.",
-                    "in": "path",
-                    "name": "templateName",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/TemplateName"
-                    }
-                }
-            ]
+            }
         }
     },
     "servers": [
         {
             "description": "default server URL",
-            "url": "/api/adc/v1"
+            "url": "/api/adm/v1"
         }
     ],
     "x-tagGroups": [
-        {
-            "name": "Agent Key API",
-            "tags": []
-        },
         {
             "name": "Apps API",
             "tags": []
@@ -5704,19 +3451,7 @@
             "tags": []
         },
         {
-            "name": "Error Sets API",
-            "tags": []
-        },
-        {
             "name": "Gateways API",
-            "tags": []
-        },
-        {
-            "name": "Integrations API",
-            "tags": []
-        },
-        {
-            "name": "Policies API",
             "tags": []
         },
         {
@@ -5724,23 +3459,11 @@
             "tags": []
         },
         {
-            "name": "Services API",
-            "tags": []
-        },
-        {
             "name": "Sites API",
             "tags": []
         },
         {
-            "name": "Strategies API",
-            "tags": []
-        },
-        {
             "name": "TcpUdp Components API",
-            "tags": []
-        },
-        {
-            "name": "Templates API",
             "tags": []
         },
         {
