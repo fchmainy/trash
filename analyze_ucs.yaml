@@ -1,0 +1,101 @@
+---
+- hosts: all
+  connection: local
+  vars:
+    cm_host: 10.1.1.5
+    base_path: "/api/v1"
+    cm_username: "admin"
+    cm_password: "Welcome123!"
+
+    migration_name: ""
+
+  tasks:
+    - name: Auth BIG-IP Next CM API
+      uri:
+        url: https://{{ cm_host }}/api/login
+        method: POST
+        headers:
+          Content-Type: application/json
+        body: |
+          {
+              "username": "{{ cm_username }}",
+              "password": "{{ cm_password }}"
+          }
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+      register: auth_result
+
+
+    - name: Set the BIG-IP Next CM token
+      set_fact:
+        cm_access_token: "Bearer {{ auth_result.json.access_token }}"
+    - debug:
+        var: cm_access_token
+
+    - name: Get Migrations list
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200
+              validate_certs: false
+              return_content: true
+      register: migration_result
+
+    - name: Set the Migration ID
+      set_fact:
+        migration_id: "{{ migration_result.json | json_query(query) | first }}"
+      vars:
+        query: "_embedded.migrations[? name == '{{ migration_name }}'].id"
+
+    - debug:
+        msg: "{{ migration_id }}"
+
+    - name: Get Applications
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200, 201
+              validate_certs: false
+              return_content: true
+      register: apps_result
+
+    - name: get unsupported as3 objects
+      set_fact:
+              unsupported_as3_features: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: '_embedded.applications[].virtual_servers[].as3_unsupported[]'
+
+    - name: get green apps
+      set_fact:
+              green_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              color: "green"
+              query: "_embedded.applications[].virtual_servers[?status=='green'].name[]"
+
+    - name: get yellow apps
+      set_fact:
+              yellow_apps: "{{ apps_result.json | json_query(query) | select()}}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='yellow'].name[]"
+
+    - name: get red apps
+      set_fact:
+              red_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='red'].name[]"
+
+    - name: get blue apps
+      set_fact:
+              blue_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='blue'].name[]"
