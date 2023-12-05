@@ -4,8 +4,8 @@
   vars:
     cm_host: 10.1.1.5
     base_path: "/api/v1"
-    cm_username: "admin"
-    cm_password: "Welcome123!"
+    cm_username: ""
+    cm_password: ""
 
     migration_name: ""
 
@@ -16,21 +16,32 @@
         method: POST
         headers:
           Content-Type: application/json
-        body: |
-          {
-              "username": "{{ cm_username }}",
-              "password": "{{ cm_password }}"
-          }
+        body:
+          username: "{{ cm_username }}"
+          password: "{{ cm_password }}"
         body_format: json
         timeout: 60
         status_code: 200
         validate_certs: false
       register: auth_result
 
+    - name: Refresh CM Auth Token
+      uri:
+        url: https://{{ cm_host }}/api/token-refresh
+        method: POST
+        headers:
+          Content-Type: application/json
+        body:
+          refresh_token: "{{ auth_result.json.access_token }}"
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+      register: refresh_auth_result
 
-    - name: Set the BIG-IP Next CM token
+    - name: Set the BIG-IP Next CM refreshtoken
       set_fact:
-        cm_access_token: "Bearer {{ auth_result.json.access_token }}"
+        cm_access_token: "Bearer {{ refresh_auth_result.json.access_token }}"
     - debug:
         var: cm_access_token
 
@@ -69,6 +80,41 @@
               return_content: true
       register: apps_result
 
+    - name: get list of application ids
+      set_fact:
+              application_ids: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: '_embedded.applications[].virtual_servers[].id[]'
+
+    - name: Install dependencies
+      uri:
+        url: "https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications/install-dependencies"
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: "{{ cm_access_token }}"
+        body:
+          applications: "{{ application_ids }}" #"{{ item }}"
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+          #      loop: "{{ application_ids }}"
+      register: dependencies_result
+
+    - name: Get Applications
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200, 201
+              validate_certs: false
+              return_content: true
+      register: apps_result
+
     - name: get unsupported as3 objects
       set_fact:
               unsupported_as3_features: "{{ apps_result.json | json_query(query) | select() }}"
@@ -79,7 +125,6 @@
       set_fact:
               green_apps: "{{ apps_result.json | json_query(query) | select() }}"
       vars:
-              color: "green"
               query: "_embedded.applications[].virtual_servers[?status=='green'].name[]"
 
     - name: get yellow apps
@@ -99,3 +144,16 @@
               blue_apps: "{{ apps_result.json | json_query(query) | select() }}"
       vars:
               query: "_embedded.applications[].virtual_servers[?status=='blue'].name[]"
+
+
+    - name: iRules installed
+      set_fact:
+              waf_policies: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[].irules[].name"
+
+    - name: WAF Policies installed
+      set_fact:
+              waf_policies: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[].waf_policies[].name"
