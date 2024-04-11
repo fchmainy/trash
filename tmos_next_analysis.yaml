@@ -1,0 +1,189 @@
+---
+# Usage: ansible-playbook tmos_next_analysis.yaml -e "migration_name=my_tmos_migration_name" -e "cm_username=admin" -e "cm_password=guessDapassW0rd?" -i hosts.ini
+- hosts: all
+  connection: local
+  vars:
+    cm_host: 10.1.1.5
+    base_path: "/api/v1"
+    cm_username: ""
+    cm_password: ""
+
+    migration_name: ""
+
+  tasks:
+    - name: Auth BIG-IP Next CM API
+      uri:
+        url: https://{{ cm_host }}/api/login
+        method: POST
+        headers:
+          Content-Type: application/json
+        body:
+          username: "{{ cm_username }}"
+          password: "{{ cm_password }}"
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+      register: auth_result
+
+    - name: Refresh CM Auth Token
+      uri:
+        url: https://{{ cm_host }}/api/token-refresh
+        method: POST
+        headers:
+          Content-Type: application/json
+        body:
+          refresh_token: "{{ auth_result.json.access_token }}"
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+      register: refresh_auth_result
+
+    - name: Set the BIG-IP Next CM refreshtoken
+      set_fact:
+        cm_access_token: "Bearer {{ refresh_auth_result.json.access_token }}"
+    - debug:
+        var: cm_access_token
+
+    - name: Get Migrations list
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200
+              validate_certs: false
+              return_content: true
+      register: migration_result
+
+    - name: debug migration Name
+      debug:
+        msg: '{{ migration_name }}'
+
+    - name: Get the Migration ID
+      set_fact:
+        migration_id: "{{ migration_result.json | json_query(query) | first }}"
+      vars:
+        query: "_embedded.migrations[? name == '{{ migration_name }}']"
+
+    - name: Set the Migration ID
+      set_fact:
+        migration_id: "{{ migration_result.json | json_query(query) | first }}"
+      vars:
+        query: "_embedded.migrations[? name == '{{ migration_name }}'].id"
+
+    - debug:
+        msg: "{{ migration_id }}"
+
+    - name: Get Applications
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200, 201
+              validate_certs: false
+              return_content: true
+      register: apps_result
+
+    - name: get list of application ids
+      set_fact:
+              application_ids: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: '_embedded.applications[].virtual_servers[].id[]'
+
+    - name: Install dependencies
+      uri:
+        url: "https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications/install-dependencies"
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: "{{ cm_access_token }}"
+        body:
+          applications: "{{ application_ids }}" #"{{ item }}"
+        body_format: json
+        timeout: 60
+        status_code: 200
+        validate_certs: false
+          #      loop: "{{ application_ids }}"
+      register: dependencies_result
+
+    - name: Get Applications
+      uri:
+              url: 'https://{{ cm_host }}{{ base_path }}/migrations/{{ migration_id }}/applications'
+              method: GET
+              headers:
+                Accept: "application/json"
+                Content-Type: "application/json"
+                Authorization: "{{ cm_access_token }}"
+              status_code: 200, 201
+              validate_certs: false
+              return_content: true
+      register: apps_result
+
+    - name: get unsupported as3 objects
+      set_fact:
+              unsupported_as3_features: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: '_embedded.applications[].virtual_servers[].as3_unsupported[]'
+
+    - name: remove app specific arguments
+      set_fact:
+        output_unsupported: "{{ output_unsupported | default([]) + [{'value': item.split('/')[0]}] }}"
+      loop: "{{ unsupported_as3_features }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: remove dups
+      set_fact:
+        output_unsupported: "{{ output_unsupported | unique }}"
+      vars:
+        output_unsupported: "{{ output_unsupported | default([]) }}"
+
+    - name: print output
+      debug:
+        var: output_unsupported
+
+    - name: get green apps
+      set_fact:
+              green_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='green'].name[]"
+
+    - name: Print Green Apps
+      debug:
+        var: green_apps
+
+    - name: get yellow apps
+      set_fact:
+              yellow_apps: "{{ apps_result.json | json_query(query) | select()}}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='yellow'].name[]"
+
+    - name: Print yellow Apps
+      debug:
+        var: yellow_apps
+
+    - name: get red apps
+      set_fact:
+              red_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='red'].name[]"
+    - name: Print Red Apps
+      debug:
+        var: red_apps
+
+    - name: get blue apps
+      set_fact:
+              blue_apps: "{{ apps_result.json | json_query(query) | select() }}"
+      vars:
+              query: "_embedded.applications[].virtual_servers[?status=='blue'].name[]"
+
+    - name: Print Blue Apps
+      debug:
+        var: blue_apps
